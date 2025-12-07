@@ -154,6 +154,7 @@ export const AppContextProvider = ({ children }) => {
     axios,
     fetchProducts,
     setCartItems,
+    backendUrl: import.meta.env.VITE_BACKEND_URL,
   };
   return <AppContext.Provider value={value}>{children}</AppContext.Provider>;
 };

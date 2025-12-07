@@ -1,5 +1,5 @@
 import { useEffect, useState } from "react";
-import { useAppContext } from "../context/AppContext";
+import { useAppContext } from "../context/appContext";
 
 import axios from "axios";
 import toast from "react-hot-toast";
@@ -15,6 +15,7 @@ const Cart = () => {
     updateCartItem,
     axios,
     user,
+    backendUrl,
   } = useAppContext();
 
   // state to store the products available in cart
@@ -104,7 +105,7 @@ const Cart = () => {
 
         {cartArray.map((product, index) => (
           <div
-            key={index}
+            key={product._id}
             className="grid grid-cols-[2fr_1fr_1fr] text-gray-500 items-center text-sm md:text-base font-medium pt-3"
           >
             <div className="flex items-center md:gap-6 gap-3">
@@ -117,7 +118,7 @@ const Cart = () => {
               >
                 <img
                   className="max-w-full h-full object-contain"
-                  src={`http://localhost:5000/images/${product.image[0]}`}
+                  src={`${backendUrl}/images/${product.image[0]}`}
                   alt={product.name}
                 />
               </div>

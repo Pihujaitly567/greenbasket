@@ -4,7 +4,7 @@ import Product from "../models/product.model.js";
 // Place order COD: /api/order/place
 export const placeOrderCOD = async (req, res) => {
   try {
-    const userId = req.user;
+    const userId = req.user._id;
     const { items, address } = req.body;
     if (!address || !items || items.length === 0) {
       return res
@@ -38,7 +38,7 @@ export const placeOrderCOD = async (req, res) => {
 // oredr details for individual user :/api/order/user
 export const getUserOrders = async (req, res) => {
   try {
-    const userId = req.user;
+    const userId = req.user._id;
     const orders = await Order.find({
       userId,
       $or: [{ paymentType: "COD" }, { isPaid: true }],
@@ -62,5 +62,15 @@ export const getAllOrders = async (req, res) => {
     res.status(200).json({ success: true, orders });
   } catch (error) {
     res.status(500).json({ message: "Internal Server Error" });
+  }
+};
+// update status :/api/order/status
+export const updateStatus = async (req, res) => {
+  try {
+    const { orderId, status } = req.body;
+    await Order.findByIdAndUpdate(orderId, { status });
+    res.json({ success: true, message: "Status updated" });
+  } catch (error) {
+    res.status(500).json({ success: false, message: error.message });
   }
 };

@@ -1,11 +1,12 @@
 import { Link, NavLink, Outlet } from "react-router-dom";
 import { assets } from "../../assets/assets";
-import { useAppContext } from "../../context/AppContext";
+import { useAppContext } from "../../context/appContext";
 import toast from "react-hot-toast";
 const SellerLayout = () => {
   const { isSeller, setIsSeller, axios, navigate } = useAppContext();
   const sidebarLinks = [
-    { name: "Add Product", path: "/seller", icon: assets.add_icon },
+    { name: "Dashboard", path: "/seller", icon: assets.profile_icon },
+    { name: "Add Product", path: "/seller/add-product", icon: assets.add_icon },
     {
       name: "Product List",
       path: "/seller/product-list",
@@ -30,8 +31,20 @@ const SellerLayout = () => {
   return (
     <>
       <div className="flex items-center justify-between px-4 md:px-8 border-b border-gray-300 py-3 bg-white transition-all duration-300">
-        <Link to={"/"}>
-          <h1 className="text-2xl font-semibold">Grocery Store App</h1>
+        <Link to={"/"} className="flex items-center gap-3">
+          <img
+            src={assets.logo}
+            alt="GreenBasket Logo"
+            className="w-10 h-10 lg:w-12 lg:h-12 object-contain"
+          />
+          <div className="flex flex-col leading-tight">
+            <h1 className="text-xl md:text-2xl font-bold text-green-700 tracking-tight">
+              GreenBasket
+            </h1>
+            <p className="text-xs text-green-600 italic hidden sm:block">
+              Seller Dashboard
+            </p>
+          </div>
         </Link>
         <div className="flex items-center gap-5 text-gray-500">
           <p>Hi! Admin</p>
@@ -51,11 +64,10 @@ const SellerLayout = () => {
               key={item.name}
               end={item.path === "/seller"}
               className={({ isActive }) => `flex items-center py-3 px-4 gap-3 
-                            ${
-                              isActive
-                                ? "border-r-4 md:border-r-[6px] bg-indigo-500/10 border-indigo-500 text-indigo-500"
-                                : "hover:bg-gray-100/90 border-white "
-                            }`}
+                            ${isActive
+                  ? "border-r-4 md:border-r-[6px] bg-indigo-500/10 border-indigo-500 text-indigo-500"
+                  : "hover:bg-gray-100/90 border-white "
+                }`}
             >
               <img src={item.icon} alt="" className="w-7 h-7" />
               <p className="md:block hidden text-center">{item.name}</p>

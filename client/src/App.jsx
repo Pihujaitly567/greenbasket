@@ -16,12 +16,27 @@ import SellerLayout from "./pages/seller/SellerLayout";
 import AddProduct from "./pages/seller/AddProduct";
 import ProductList from "./pages/seller/ProductList";
 import Orders from "./pages/seller/Orders";
+import Dashboard from "./pages/seller/Dashboard";
 import Deals from "./pages/Deals";
+import AOS from "aos";
+import "aos/dist/aos.css";
+import { useEffect } from "react";
+
 const App = () => {
   const isSellerPath = useLocation().pathname.includes("seller");
   const { showUserLogin, isSeller } = useAppContext();
+
+  useEffect(() => {
+    AOS.init({
+      duration: 1000,
+      easing: "ease-in-out",
+      once: true,
+      mirror: false,
+    });
+  }, []);
+
   return (
-    <div className="text-default min-h-screen">
+    <div className="overflow-x-hidden text-default min-h-screen">
       {isSellerPath ? null : <Navbar />}
       {showUserLogin ? <Auth /> : null}
       <Toaster />
@@ -41,7 +56,11 @@ const App = () => {
             path="/seller"
             element={isSeller ? <SellerLayout /> : <SellerLogin />}
           >
-            <Route index element={isSeller ? <AddProduct /> : null} />
+            <Route index element={isSeller ? <Dashboard /> : null} />
+            <Route
+              path="add-product"
+              element={isSeller ? <AddProduct /> : null}
+            />
             <Route
               path="product-list"
               element={isSeller ? <ProductList /> : null}

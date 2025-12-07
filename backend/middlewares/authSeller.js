@@ -6,10 +6,11 @@ export const authSeller = async (req, res, next) => {
   }
   try {
     const decoded = jwt.verify(sellerToken, process.env.JWT_SECRET);
-    if (decoded.email === process.env.SELLER_EMAIL) {
+    // Allow if decoded has an ID (DB seller) OR if email matches env (Hardcoded admin)
+    if (decoded.id || decoded.email === process.env.SELLER_EMAIL) {
       return next();
     } else {
-      return res.status(403).json({ message: "Forbidden", success: false });
+      return res.json({ success: false, message: "Forbidden" });
     }
   } catch (error) {
     console.error("Error in authSeller middleware:", error);

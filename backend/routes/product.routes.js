@@ -1,8 +1,10 @@
 import express from "express";
 
 import { authSeller } from "../middlewares/authSeller.js";
+import authUser from "../middlewares/authUser.js";
 import {
   addProduct,
+  addProductReview,
   changeStock,
   getProductById,
   getProducts,
@@ -14,5 +16,6 @@ router.post("/add-product", authSeller, upload.array("image", 4), addProduct);
 router.get("/list", getProducts);
 router.get("/id", getProductById);
 router.post("/stock", authSeller, changeStock);
+router.post("/review", authUser, addProductReview);
 
 export default router;
