@@ -31,7 +31,7 @@ const Banner = () => {
             />
           </Link>
           <Link
-            to={"/products"}
+            to={"/deals"}
             className="hidden md:flex group items-center gap-2 px-7 rounded text-white  py-3 bg-primary"
           >
             Explore Deals

@@ -13,8 +13,23 @@
 
 /* 🌿 GLOBAL CUTE LEAF BACKGROUND */
 body {
-  background-image: url("/src/assets/bg_leaves.svg");
-  background-size: 250px; 
+  position: relative;
+  min-height: 100vh;
+}
+
+body::before {
+  content: "";
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  z-index: -1;
+  background-image: url("/src/assets/bg_pattern_custom.jpg");
+  background-size: repeat;
+  /* ensuring pattern size is reasonable */
   background-repeat: repeat;
-  background-attachment: fixed;
+  opacity: 0.4;
+  /* Adjust this value to control visibility */
+  pointer-events: none;
 }

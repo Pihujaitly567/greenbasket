@@ -45,9 +45,8 @@ const Orders = () => {
                   <p className="font-medium">
                     {item.product.name}{" "}
                     <span
-                      className={`text-indigo-500 ${
-                        item.quantity < 2 && "hidden"
-                      }`}
+                      className={`text-indigo-500 ${item.quantity < 2 && "hidden"
+                        }`}
                     >
                       x {item.quantity}
                     </span>
@@ -69,7 +68,7 @@ const Orders = () => {
           </div>
 
           <p className="font-medium text-base my-auto text-black/70">
-            ${order.amount}
+            ₹{order.amount}
           </p>
 
           <div className="flex flex-col text-sm">

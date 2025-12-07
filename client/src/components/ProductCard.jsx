@@ -14,9 +14,9 @@ const ProductCard = ({ product }) => {
         }}
         className="border border-gray-500/20 rounded-md md:px-4 px-3 py-2 bg-white min-w-56 max-w-56 w-full"
       >
-        <div className="group cursor-pointer flex items-center justify-center px-2">
+        <div className="group cursor-pointer flex items-center justify-center px-2 h-48">
           <img
-            className="group-hover:scale-105 transition max-w-26 md:max-w-36"
+            className="group-hover:scale-105 transition w-full h-full object-contain"
             src={`http://localhost:5000/images/${product.image[0]}`}
             alt={product.name}
           />
@@ -41,9 +41,9 @@ const ProductCard = ({ product }) => {
           </div>
           <div className="flex items-end justify-between mt-3">
             <p className="md:text-xl text-base font-medium text-indigo-500">
-              ${product.offerPrice}{" "}
+              ₹{product.offerPrice}{" "}
               <span className="text-gray-500/60 md:text-sm text-xs line-through">
-                ${product.price}
+                ₹{product.price}
               </span>
             </p>
             <div

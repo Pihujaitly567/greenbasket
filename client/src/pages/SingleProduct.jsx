@@ -42,19 +42,20 @@ const SingleProduct = () => {
                 <div
                   key={index}
                   onClick={() => setThumbnail(image)}
-                  className="border max-w-24 border-gray-500/30 rounded overflow-hidden cursor-pointer"
+                  className="border max-w-24 w-24 h-24 border-gray-500/30 rounded overflow-hidden cursor-pointer flex items-center justify-center bg-white"
                 >
                   <img
                     src={`http://localhost:5000/images/${image}`}
-                    alt={`Thumbnail ${index + 1}`}
+                    className="w-full h-full object-contain"
                   />
                 </div>
               ))}
             </div>
 
-            <div className="border border-gray-500/30 max-w-100 rounded overflow-hidden">
+            <div className="border border-gray-500/30 w-96 h-96 rounded overflow-hidden bg-white flex items-center justify-center">
               <img
                 src={`http://localhost:5000/images/${thumbnail}`}
+                className="w-full h-full object-contain"
                 alt="Selected product"
               />
             </div>
@@ -83,9 +84,9 @@ const SingleProduct = () => {
 
             <div className="mt-6">
               <p className="text-gray-500/70 line-through">
-                MRP: ${product.price}
+                MRP: ₹{product.price}
               </p>
-              <p className="text-2xl font-medium">MRP: ${product.offerPrice}</p>
+              <p className="text-2xl font-medium">MRP: ₹{product.offerPrice}</p>
               <span className="text-gray-500/70">(inclusive of all taxes)</span>
             </div>
 

@@ -41,7 +41,7 @@ const ProductList = () => {
                       <img
                         src={`http://localhost:5000/images/${product.image[0]}`}
                         alt="Product"
-                        className="w-16"
+                        className="w-16 h-16 object-contain"
                       />
                     </div>
                     <span className="truncate max-sm:hidden w-full">
@@ -50,7 +50,7 @@ const ProductList = () => {
                   </td>
                   <td className="px-4 py-3">{product.category}</td>
                   <td className="px-4 py-3 max-sm:hidden">
-                    ${product.offerPrice}
+                    ₹{product.offerPrice}
                   </td>
                   <td className="px-4 py-3">
                     <label className="relative inline-flex items-center cursor-pointer text-gray-900 gap-3">

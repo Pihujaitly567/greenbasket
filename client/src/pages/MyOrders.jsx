@@ -38,14 +38,13 @@ const MyOrders = () => {
           <p className="flex justify-between items-center gap-6 ">
             <span>orderId :{order._id} </span>
             <span>payment :{order.paymentType} </span>
-            <span>Total Amount :${order.amount} </span>
+            <span>Total Amount :₹{order.amount} </span>
           </p>
           {order.items.map((item, index) => (
             <div
               key={index}
-              className={`relative bg-white text-gray-800/70 ${
-                order.items.length !== index + 1 && "border-b"
-              } border-gray-300 flex flex-col md:flex-row md:items-center  justify-between p-4 py-5 w-full max-w-4xl`}
+              className={`relative bg-white text-gray-800/70 ${order.items.length !== index + 1 && "border-b"
+                } border-gray-300 flex flex-col md:flex-row md:items-center  justify-between p-4 py-5 w-full max-w-4xl`}
             >
               <div className="flex items-center mb-4 md:mb-0">
                 <div className="p-4 rounded-lg">
@@ -68,7 +67,7 @@ const MyOrders = () => {
                 <p>Date:{new Date(order.createdAt).toLocaleString()}</p>
               </div>
               <p className=" text-lg">
-                Amount:${item.product.offerPrice * item.quantity}
+                Amount:₹{item.product.offerPrice * item.quantity}
               </p>
             </div>
           ))}

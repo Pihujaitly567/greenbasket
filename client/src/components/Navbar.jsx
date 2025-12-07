@@ -49,7 +49,7 @@ const Navbar = () => {
       flex flex-col gap-2 px-6 md:px-16 lg:px-24 xl:px-32 py-4 
       border-b border-green-200 shadow-sm
       bg-[url('/src/assets/leaf_bg.svg')] bg-cover bg-no-repeat bg-left
-      bg-green-50/60 backdrop-blur-md
+      bg-green-50/60 backdrop-blur-md relative z-50
       "
     >
       {/* TOP ROW */}

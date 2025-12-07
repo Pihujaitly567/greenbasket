@@ -24,7 +24,7 @@ const Auth = () => {
       } else {
         toast.error(data.message);
       }
-    } catch (error) {}
+    } catch (error) { }
   };
   return (
     <div
@@ -99,6 +99,18 @@ const Auth = () => {
         <button className="bg-indigo-500 hover:bg-indigo-600 transition-all text-white w-full py-2 rounded-md cursor-pointer">
           {state === "register" ? "Create Account" : "Login"}
         </button>
+        <p className="mt-2 text-sm text-gray-500">
+          Are you a seller?{" "}
+          <span
+            onClick={() => {
+              setShowUserLogin(false);
+              navigate("/seller");
+            }}
+            className="text-indigo-500 cursor-pointer font-medium"
+          >
+            Seller Login
+          </span>
+        </p>
       </form>
     </div>
   );
