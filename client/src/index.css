@@ -1,10 +1,20 @@
 @import url("https://fonts.googleapis.com/css2?family=Outfit:wght@100..900&display=swap");
-
 @import "tailwindcss";
+
+/* GLOBAL FONT */
 * {
   font-family: "Outfit", sans-serif;
 }
 
+/* THEME COLOR */
 @theme {
   --color-primary: #4b0082;
+}
+
+/* 🌿 GLOBAL CUTE LEAF BACKGROUND */
+body {
+  background-image: url("/src/assets/bg_leaves.svg");
+  background-size: 250px; 
+  background-repeat: repeat;
+  background-attachment: fixed;
 }
