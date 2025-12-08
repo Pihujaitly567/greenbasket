@@ -23,7 +23,7 @@ const allowedOrigins = [
 ];
 //middlewares
 app.use(cors({
-  origin: ['https://greenbasket-fj6y.onrender.com', 'http://localhost:5173'],
+  origin: allowedOrigins,
   credentials: true
 }));
 app.use(cookieParser());
