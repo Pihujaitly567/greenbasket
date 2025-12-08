@@ -20,7 +20,7 @@ await connectCloudinary();
 const allowedOrigins = ["http://localhost:5173"];
 //middlewares
 app.use(cors({
-  origin: ['https://greenbasket.onrender.com', 'http://localhost:5173'],
+  origin: ['https://greenbasket-fj6y.onrender.com', 'http://localhost:5173'],
   credentials: true
 }));
 app.use(cookieParser());
