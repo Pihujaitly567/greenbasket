@@ -15,17 +15,15 @@ import { connectCloudinary } from "./config/cloudinary.js";
 
 const app = express();
 
-await connectCloudinary();
-// allow multiple origins
-const allowedOrigins = [
-  "http://localhost:5173",
-  "https://greenbasket-1.onrender.com"
-];
-//middlewares
+// Connect to cloudinary
+connectCloudinary().catch(err => console.log("Cloudinary error:", err));
+
+// CORS configuration - allow all origins for now
 app.use(cors({
-  origin: allowedOrigins,
+  origin: true,
   credentials: true
 }));
+
 app.use(cookieParser());
 app.use(express.json());
 
@@ -38,6 +36,11 @@ app.use("/api/cart", cartRoutes);
 app.use("/api/address", addressRoutes);
 app.use("/api/order", orderRoutes);
 app.use("/api/payment", paymentRoutes);
+
+// Health check endpoint
+app.get("/", (req, res) => {
+  res.json({ message: "GreenBasket API is running" });
+});
 
 const PORT = process.env.PORT || 5000;
 app.listen(PORT, () => {
