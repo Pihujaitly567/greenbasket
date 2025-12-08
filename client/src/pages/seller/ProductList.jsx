@@ -1,5 +1,5 @@
 import toast from "react-hot-toast";
-import { useAppContext } from "../../context/appContext";
+import { useAppContext } from "../../context/AppContext";
 import { useNavigate } from "react-router-dom";
 import { assets } from "../../assets/assets";
 

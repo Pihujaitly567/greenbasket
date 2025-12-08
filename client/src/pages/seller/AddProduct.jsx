@@ -1,6 +1,6 @@
 import { assets, categories } from "../../assets/assets";
 import { useContext, useState, useEffect } from "react";
-import { AppContext } from "../../context/appContext";
+import { AppContext } from "../../context/AppContext";
 import toast from "react-hot-toast";
 import { useLocation, useNavigate } from "react-router-dom";
 
