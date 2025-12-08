@@ -63,19 +63,113 @@ const Cart = () => {
       getCart();
     }
   }, [products, cartItems]);
+
+  const loadRazorpay = () => {
+    return new Promise((resolve) => {
+      const script = document.createElement("script");
+      script.src = "https://checkout.razorpay.com/v1/checkout.js";
+      script.async = true; // Make script load asynchronously
+      script.onload = () => resolve(true);
+      script.onerror = () => resolve(false);
+      document.body.appendChild(script);
+    });
+  };
+
+  const handlePlaceOrder = async () => {
+    // 1. Load Razorpay SDK
+    const res = await loadRazorpay();
+    if (!res) {
+      toast.error("Razorpay SDK failed to load. Are you online?");
+      return;
+    }
+
+    // 2. Create Order on Backend
+    try {
+      const { data: orderData } = await axios.post("/api/payment/create-order", {
+        amount: totalCartAmount() + (totalCartAmount() * 2) / 100, // Including tax
+      });
+
+      if (!orderData.success) {
+        toast.error("Error creating order");
+        return;
+      }
+
+      // 3. Initialize Razorpay Options
+      const options = {
+        key: import.meta.env.VITE_RAZORPAY_KEY_ID, // Enter the Key ID generated from the Dashboard
+        amount: orderData.order.amount,
+        currency: orderData.order.currency,
+        name: "GreenBasket",
+        description: "Grocery Order Payment",
+        order_id: orderData.order.id,
+        handler: async function (response) {
+          // 4. Verify Payment on Backend
+          try {
+            const { data: verifyData } = await axios.post("/api/payment/verify-payment", response);
+            if (verifyData.success) {
+              // 5. Place Order in DB (existing logic)
+              const { data } = await axios.post("/api/order/cod", { // Renamed endpoint to be generic
+                items: cartArray.map((item) => ({
+                  product: item._id,
+                  quantity: item.quantity,
+                })),
+                amount: totalCartAmount() + (totalCartAmount() * 2) / 100,
+                address: selectedAddress._id,
+                paymentStatus: "Paid", // Mark as paid for online orders
+                paymentMethod: "Online",
+                razorpayPaymentId: response.razorpay_payment_id,
+                razorpayOrderId: response.razorpay_order_id,
+                razorpaySignature: response.razorpay_signature,
+              });
+              if (data.success) {
+                toast.success(data.message);
+                setCartItems({});
+                navigate("/my-orders");
+              } else {
+                toast.error(data.message);
+              }
+            } else {
+              toast.error("Payment verification failed");
+            }
+          } catch (error) {
+            toast.error(error.message);
+          }
+        },
+        prefill: {
+          name: user?.name,
+          email: user?.email,
+          contact: user?.phone || "9999999999", // Can be dynamic, use user's phone if available
+        },
+        theme: {
+          color: "#4f46e5",
+        },
+      };
+
+      const paymentObject = new window.Razorpay(options);
+      paymentObject.open();
+
+    } catch (error) {
+      console.log(error);
+      toast.error(error.message);
+    }
+  };
+
   const placeOrder = async () => {
     try {
       if (!selectedAddress) {
         return toast.error("Please select an address");
       }
-      // place order with cod
+
       if (paymentOption === "COD") {
+        // place order with cod
         const { data } = await axios.post("/api/order/cod", {
           items: cartArray.map((item) => ({
             product: item._id,
             quantity: item.quantity,
           })),
           address: selectedAddress._id,
+          paymentStatus: "Pending", // For COD, payment is pending
+          paymentMethod: "COD",
         });
         if (data.success) {
           toast.success(data.message);
@@ -84,6 +178,8 @@ const Cart = () => {
         } else {
           toast.error(data.message);
         }
+      } else if (paymentOption === "Online") {
+        await handlePlaceOrder();
       }
     } catch (error) {
       toast.error(error.message);

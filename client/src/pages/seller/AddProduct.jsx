@@ -1,15 +1,34 @@
 import { assets, categories } from "../../assets/assets";
-import { useContext, useState } from "react";
-import { AppContext } from "../../context/AppContext";
+import { useContext, useState, useEffect } from "react";
+import { AppContext } from "../../context/appContext";
 import toast from "react-hot-toast";
+import { useLocation, useNavigate } from "react-router-dom";
+
 const AddProduct = () => {
-  const { axios } = useContext(AppContext);
+  const { axios, backendUrl } = useContext(AppContext);
+  const location = useLocation();
+  const navigate = useNavigate();
+
   const [files, setFiles] = useState([]);
   const [name, setName] = useState("");
   const [description, setDescription] = useState("");
   const [category, setCategory] = useState("");
   const [price, setPrice] = useState("");
   const [offerPrice, setOfferPrice] = useState("");
+  const [productId, setProductId] = useState(null);
+
+  useEffect(() => {
+    if (location.state && location.state.product) {
+      const { product } = location.state;
+      setName(product.name);
+      setDescription(product.description);
+      setCategory(product.category);
+      setPrice(product.price);
+      setOfferPrice(product.offerPrice);
+      setProductId(product._id);
+      // Note: Files are not pre-filled for security/browser reasons, but can shown if needed
+    }
+  }, [location.state]);
 
   const handleSubmit = async (e) => {
     try {
@@ -22,19 +41,35 @@ const AddProduct = () => {
       formData.append("price", price);
       formData.append("offerPrice", offerPrice);
 
+      if (productId) {
+        formData.append("id", productId);
+      }
+
       for (let i = 0; i < files.length; i++) {
         formData.append("image", files[i]);
       }
 
-      const { data } = await axios.post("/api/product/add-product", formData);
+      let data;
+      if (productId) {
+        const response = await axios.post("/api/product/update", formData);
+        data = response.data;
+      } else {
+        const response = await axios.post("/api/product/add-product", formData);
+        data = response.data;
+      }
+
       if (data.success) {
         toast.success(data.message);
-        setName("");
-        setDescription("");
-        setCategory("");
-        setPrice("");
-        setOfferPrice("");
-        setFiles([]);
+        if (productId) {
+          navigate('/seller/product-list'); // Go back to list after update
+        } else {
+          setName("");
+          setDescription("");
+          setCategory("");
+          setPrice("");
+          setOfferPrice("");
+          setFiles([]);
+        }
       } else {
         toast.error(data.message);
       }
@@ -78,6 +113,7 @@ const AddProduct = () => {
                 </label>
               ))}
           </div>
+          {productId && <p className="text-sm text-gray-500 mt-2">Leave images empty to keep current images.</p>}
         </div>
         <div className="flex flex-col gap-1 max-w-md">
           <label className="text-base font-medium" htmlFor="product-name">
@@ -158,7 +194,7 @@ const AddProduct = () => {
           </div>
         </div>
         <button className="px-8 py-2.5 bg-indigo-500 text-white font-medium rounded">
-          ADD
+          {productId ? "UPDATE" : "ADD"}
         </button>
       </form>
     </div>
