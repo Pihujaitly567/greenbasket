@@ -10,8 +10,13 @@ import {
     Tooltip,
     Legend,
     ResponsiveContainer,
+    PieChart,
+    Pie,
+    Cell,
 } from "recharts";
 import { assets } from "../../assets/assets";
+
+const COLORS = ["#0088FE", "#00C49F", "#FFBB28", "#FF8042", "#8884d8", "#82ca9d"];
 
 const Dashboard = () => {
     const { axios, isSeller } = useAppContext();
@@ -21,6 +26,9 @@ const Dashboard = () => {
         totalSales: 0,
     });
     const [salesData, setSalesData] = useState([]);
+    const [topProducts, setTopProducts] = useState([]);
+    const [categoryRevenue, setCategoryRevenue] = useState([]);
+    const [orderStatus, setOrderStatus] = useState([]);
     const [loading, setLoading] = useState(true);
 
     const fetchAnalytics = async () => {
@@ -29,6 +37,9 @@ const Dashboard = () => {
             if (data.success) {
                 setStats(data.stats);
                 setSalesData(data.salesData);
+                setTopProducts(data.topProducts || []);
+                setCategoryRevenue(data.categoryRevenue || []);
+                setOrderStatus(data.orderStatusBreakdown || []);
             } else {
                 toast.error(data.message);
             }
@@ -139,6 +150,90 @@ const Dashboard = () => {
                         <div className="flex items-center justify-center h-full text-gray-500">
                             No sales data available for the last 7 days.
                         </div>
+                    )}
+                </div>
+            </div>
+
+            <div className="grid grid-cols-1 lg:grid-cols-2 gap-8 mb-8">
+                {/* Order Status Breakdown */}
+                <div className="bg-white p-6 rounded-lg shadow-sm border border-gray-100">
+                    <h2 className="text-lg font-semibold text-gray-800 mb-4">Order Status Breakdown</h2>
+                    <div className="h-64 w-full">
+                        {orderStatus.length > 0 ? (
+                            <ResponsiveContainer width="100%" height="100%">
+                                <PieChart>
+                                    <Pie
+                                        data={orderStatus}
+                                        dataKey="count"
+                                        nameKey="_id"
+                                        cx="50%"
+                                        cy="50%"
+                                        outerRadius={80}
+                                        label={({ _id, percent }) => `${_id} ${(percent * 100).toFixed(0)}%`}
+                                    >
+                                        {orderStatus.map((entry, index) => (
+                                            <Cell key={`cell-${index}`} fill={COLORS[index % COLORS.length]} />
+                                        ))}
+                                    </Pie>
+                                    <Tooltip />
+                                    <Legend />
+                                </PieChart>
+                            </ResponsiveContainer>
+                        ) : (
+                            <div className="flex items-center justify-center h-full text-gray-500">No data available.</div>
+                        )}
+                    </div>
+                </div>
+
+                {/* Top Products */}
+                <div className="bg-white p-6 rounded-lg shadow-sm border border-gray-100 overflow-hidden">
+                    <h2 className="text-lg font-semibold text-gray-800 mb-4">Top 5 Selling Products</h2>
+                    {topProducts.length > 0 ? (
+                        <div className="space-y-4">
+                            {topProducts.map((prod, index) => (
+                                <div key={prod._id} className="flex items-center justify-between border-b pb-2 last:border-0">
+                                    <div className="flex items-center gap-3">
+                                        <span className="text-gray-400 font-medium w-4">{index + 1}.</span>
+                                        <div className="w-10 h-10 bg-gray-100 rounded overflow-hidden flex-shrink-0">
+                                            {prod.image && <img src={`${axios.defaults.baseURL}/images/${prod.image}`} alt={prod.name} className="w-full h-full object-cover" />}
+                                        </div>
+                                        <p className="text-sm font-medium text-gray-800 line-clamp-1">{prod.name}</p>
+                                    </div>
+                                    <div className="text-sm font-semibold text-indigo-600 bg-indigo-50 px-2 py-1 rounded">
+                                        {prod.totalSold} sold
+                                    </div>
+                                </div>
+                            ))}
+                        </div>
+                    ) : (
+                        <div className="flex items-center justify-center h-48 text-gray-500">No products sold yet.</div>
+                    )}
+                </div>
+            </div>
+
+            {/* Category Revenue */}
+            <div className="bg-white p-6 rounded-lg shadow-sm border border-gray-100 mb-8">
+                <h2 className="text-lg font-semibold text-gray-800 mb-4">Revenue by Category</h2>
+                <div className="h-72 w-full">
+                    {categoryRevenue.length > 0 ? (
+                        <ResponsiveContainer width="100%" height="100%">
+                            <BarChart
+                                data={categoryRevenue}
+                                layout="vertical"
+                                margin={{ top: 5, right: 30, left: 40, bottom: 5 }}
+                            >
+                                <CartesianGrid strokeDasharray="3 3" horizontal={true} vertical={false} />
+                                <XAxis type="number" tick={{ fill: "#6B7280", fontSize: 12 }} />
+                                <YAxis dataKey="_id" type="category" tick={{ fill: "#6B7280", fontSize: 12 }} width={100} />
+                                <Tooltip
+                                    formatter={(value) => `₹${value.toLocaleString()}`}
+                                    contentStyle={{ borderRadius: "8px" }}
+                                />
+                                <Bar dataKey="revenue" name="Revenue (₹)" fill="#10b981" radius={[0, 4, 4, 0]} barSize={20} />
+                            </BarChart>
+                        </ResponsiveContainer>
+                    ) : (
+                        <div className="flex items-center justify-center h-full text-gray-500">No category data available.</div>
                     )}
                 </div>
             </div>

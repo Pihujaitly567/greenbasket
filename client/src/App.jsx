@@ -21,6 +21,7 @@ import Deals from "./pages/Deals";
 import AOS from "aos";
 import "aos/dist/aos.css";
 import { useEffect } from "react";
+import NotFound from "./pages/NotFound";
 
 const App = () => {
   const isSellerPath = useLocation().pathname.includes("seller");
@@ -39,7 +40,35 @@ const App = () => {
     <div className="overflow-x-hidden text-default min-h-screen">
       {isSellerPath ? null : <Navbar />}
       {showUserLogin ? <Auth /> : null}
-      <Toaster />
+      <Toaster 
+        position="top-right" 
+        reverseOrder={false}
+        toastOptions={{
+          duration: 3000,
+          style: {
+            background: '#fff',
+            color: '#333',
+            boxShadow: '0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06)',
+            borderRadius: '8px',
+            padding: '16px',
+            fontSize: '14px',
+            fontWeight: '500',
+          },
+          success: {
+            iconTheme: {
+              primary: '#10b981',
+              secondary: '#fff',
+            },
+          },
+          error: {
+            iconTheme: {
+              primary: '#ef4444',
+              secondary: '#fff',
+            },
+          },
+        }}
+        limit={3}
+      />
       <div
         className={`${isSellerPath ? "" : "px-6 md:px-16 lg:px-24 xl:px-32"}`}
       >
@@ -67,6 +96,7 @@ const App = () => {
             />
             <Route path="orders" element={isSeller ? <Orders /> : null} />
           </Route>
+          <Route path="*" element={<NotFound />} />
         </Routes>
       </div>
       {isSellerPath ? null : <Footer />}

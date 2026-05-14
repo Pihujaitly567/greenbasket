@@ -24,7 +24,54 @@ const Auth = () => {
       } else {
         toast.error(data.message);
       }
-    } catch (error) { }
+    } catch (error) {
+      toast.error(error.response?.data?.message || "An error occurred");
+    }
+  };
+
+  const handleDemoLogin = async () => {
+    try {
+      const demoEmail = "demo@example.com";
+      const demoPassword = "demo123";
+      
+      const loginRes = await axios.post("/api/user/login", {
+        email: demoEmail,
+        password: demoPassword,
+      });
+
+      if (loginRes.data.success) {
+        toast.success("Demo Login successful");
+        navigate("/");
+        setUser(loginRes.data.user);
+        setShowUserLogin(false);
+      } else {
+        throw new Error(loginRes.data.message);
+      }
+    } catch (error) {
+      // If login fails, try to register the demo account automatically
+      try {
+        const demoEmail = "demo@example.com";
+        const demoPassword = "demo123";
+        const demoName = "Demo User";
+
+        const regRes = await axios.post("/api/user/register", {
+          name: demoName,
+          email: demoEmail,
+          password: demoPassword,
+        });
+
+        if (regRes.data.success) {
+          toast.success("Demo account created and logged in!");
+          navigate("/");
+          setUser(regRes.data.user);
+          setShowUserLogin(false);
+        } else {
+          toast.error("Failed to setup demo account.");
+        }
+      } catch (regError) {
+        toast.error("Failed to setup demo account.");
+      }
+    }
   };
   return (
     <div
@@ -34,10 +81,10 @@ const Auth = () => {
       <form
         onSubmit={handleSubmit}
         onClick={(e) => e.stopPropagation()}
-        className="flex flex-col gap-4 m-auto items-start p-8 py-12 w-80 sm:w-[352px] rounded-lg shadow-xl border border-gray-200 bg-white"
+        className="flex flex-col gap-5 m-auto items-start p-8 py-10 w-[90%] max-w-md rounded-2xl shadow-2xl border border-white/20 bg-white/95 backdrop-blur-xl"
       >
-        <p className="text-2xl font-medium m-auto">
-          <span className="text-indigo-500">User</span>{" "}
+        <p className="text-3xl font-bold m-auto tracking-tight">
+          <span className="text-green-600">User</span>{" "}
           {state === "login" ? "Login" : "Register"}
         </p>
         {state === "register" && (
@@ -53,64 +100,84 @@ const Auth = () => {
             />
           </div>
         )}
-        <div className="w-full ">
-          <p>Email</p>
+        <div className="w-full mt-2">
+          <p className="text-sm font-medium text-gray-700 mb-1">Email Address</p>
           <input
             onChange={(e) => setEmail(e.target.value)}
             value={email}
-            placeholder="type here"
-            className="border border-gray-200 rounded w-full p-2 mt-1 outline-indigo-500"
+            placeholder="you@example.com"
+            className="border border-gray-300 rounded-lg w-full p-3 bg-gray-50 focus:bg-white focus:ring-2 focus:ring-green-500 focus:border-transparent outline-none transition-all"
             type="email"
             required
           />
         </div>
-        <div className="w-full ">
-          <p>Password</p>
+        <div className="w-full">
+          <p className="text-sm font-medium text-gray-700 mb-1">Password</p>
           <input
             onChange={(e) => setPassword(e.target.value)}
             value={password}
-            placeholder="type here"
-            className="border border-gray-200 rounded w-full p-2 mt-1 outline-indigo-500"
+            placeholder="••••••••"
+            className="border border-gray-300 rounded-lg w-full p-3 bg-gray-50 focus:bg-white focus:ring-2 focus:ring-green-500 focus:border-transparent outline-none transition-all"
             type="password"
             required
           />
         </div>
         {state === "register" ? (
-          <p>
-            Already have account?{" "}
+          <p className="text-sm text-gray-600">
+            Already have an account?{" "}
             <span
               onClick={() => setState("login")}
-              className="text-indigo-500 cursor-pointer"
+              className="text-green-600 hover:text-green-700 font-medium cursor-pointer transition-colors"
             >
-              click here
+              Sign in
             </span>
           </p>
         ) : (
-          <p>
-            Create an account?{" "}
+          <p className="text-sm text-gray-600">
+            Don't have an account?{" "}
             <span
               onClick={() => setState("register")}
-              className="text-indigo-500 cursor-pointer"
+              className="text-green-600 hover:text-green-700 font-medium cursor-pointer transition-colors"
             >
-              click here
+              Sign up
             </span>
           </p>
         )}
-        <button className="bg-indigo-500 hover:bg-indigo-600 transition-all text-white w-full py-2 rounded-md cursor-pointer">
-          {state === "register" ? "Create Account" : "Login"}
+        <button className="bg-green-600 hover:bg-green-700 shadow-md shadow-green-600/20 active:scale-[0.98] transition-all text-white font-semibold w-full py-3 rounded-lg cursor-pointer mt-2">
+          {state === "register" ? "Create Account" : "Sign In"}
         </button>
-        <p className="mt-2 text-sm text-gray-500">
-          Are you a seller?{" "}
-          <span
-            onClick={() => {
-              setShowUserLogin(false);
-              navigate("/seller");
-            }}
-            className="text-indigo-500 cursor-pointer font-medium"
+        {state === "login" && (
+          <div className="w-full flex items-center gap-4 my-2 opacity-60">
+            <div className="h-px bg-gray-300 flex-1"></div>
+            <span className="text-xs uppercase font-medium">Or</span>
+            <div className="h-px bg-gray-300 flex-1"></div>
+          </div>
+        )}
+
+        {state === "login" && (
+          <button
+            type="button"
+            onClick={handleDemoLogin}
+            className="bg-white border border-gray-200 hover:bg-gray-50 shadow-sm active:scale-[0.98] transition-all text-gray-800 font-medium w-full py-3 rounded-lg cursor-pointer flex items-center justify-center gap-2"
           >
-            Seller Login
-          </span>
-        </p>
+            🚀 Demo Login
+          </button>
+        )}
+        
+        <div className="w-full text-center mt-4">
+          <p className="text-sm text-gray-500">
+            Are you a seller?{" "}
+            <span
+              onClick={() => {
+                setShowUserLogin(false);
+                navigate("/seller");
+              }}
+              className="text-green-600 hover:text-green-700 font-medium cursor-pointer transition-colors"
+            >
+              Seller Portal
+            </span>
+          </p>
+        </div>
       </form>
     </div>
   );

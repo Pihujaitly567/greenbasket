@@ -142,21 +142,22 @@ const Navbar = () => {
                 className="w-10 cursor-pointer hover:scale-105 transition"
               />
 
-              <ul className="hidden group-hover:block absolute top-12 right-0 bg-white shadow-lg 
-              border border-gray-200 py-2 w-36 rounded-lg z-50 text-sm">
-                <li
-                  onClick={() => navigate("/my-orders")}
-                  className="p-2 hover:bg-gray-100 cursor-pointer"
-                >
-                  My Orders
-                </li>
-                <li
-                  className="p-2 hover:bg-gray-100 cursor-pointer text-red-600"
-                  onClick={logout}
-                >
-                  Logout
-                </li>
-              </ul>
+              <div className="hidden group-hover:block absolute top-10 right-0 pt-2 z-50">
+                <ul className="bg-white shadow-lg border border-gray-200 py-2 w-36 rounded-lg text-sm overflow-hidden">
+                  <li
+                    onClick={() => navigate("/my-orders")}
+                    className="px-4 py-2 hover:bg-green-50 hover:text-green-700 cursor-pointer transition-colors"
+                  >
+                    My Orders
+                  </li>
+                  <li
+                    className="px-4 py-2 hover:bg-red-50 cursor-pointer text-red-600 transition-colors"
+                    onClick={logout}
+                  >
+                    Logout
+                  </li>
+                </ul>
+              </div>
             </div>
           ) : (
             <button

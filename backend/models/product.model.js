@@ -1,13 +1,59 @@
 import mongoose from "mongoose";
-const reviewSchema = mongoose.Schema(
+
+
+const productSchema = new mongoose.Schema(
   {
-    name: { type: String, required: true },
-    rating: { type: Number, required: true },
-    comment: { type: String, required: true },
-    user: {
-      type: mongoose.Schema.Types.ObjectId,
+    name: {
+      type: String,
       required: true,
-      ref: "User",
+      trim: true,
+    },
+    description: {
+      type: String,
+      required: true,
+    },
+    price: {
+      type: Number,
+      required: true,
+      min: 0,
+    },
+    offerPrice: {
+      type: Number,
+      required: true,
+      min: 0,
+    },
+    image: {
+      type: [String],
+      required: true,
+    },
+    category: {
+      type: String,
+      required: true,
+      trim: true,
+    },
+    inStock: {
+      type: Boolean,
+      default: true,
+    },
+    stockQuantity: {
+      type: Number,
+      default: 50,
+      min: 0,
+    },
+    priceHistory: [
+      {
+        price: Number,
+        offerPrice: Number,
+        changedAt: { type: Date, default: Date.now },
+      },
+    ],
+    rating: {
+      type: Number,
+      default: 0,
+    },
+    numReviews: {
+      type: Number,
+      default: 0,
     },
   },
   {
@@ -15,54 +61,23 @@ const reviewSchema = mongoose.Schema(
   }
 );
 
-const productSchema = new mongoose.Schema(
-  {
-    name: {
-      type: String,
-      required: true,
-    },
-    description: {
-      type: Array, // or String, but current code uses Array? Keeping it as is but description is usually string.
-      // Wait, original file said type: Array. I will keep it consistent with original file.
-      required: true,
-    },
-    price: {
-      type: Number,
-      required: true,
-    },
-    offerPrice: {
-      type: Number,
-      required: true,
-    },
-    image: {
-      type: Array,
-      required: true,
-    },
-    category: {
-      type: String,
-      required: true,
-    },
-    inStock: {
-      type: Boolean,
-      required: true,
-      default: true,
-    },
-    reviews: [reviewSchema],
-    rating: {
-      type: Number,
-      required: true,
-      default: 0,
-    },
-    numReviews: {
-      type: Number,
-      required: true,
-      default: 0,
-    },
-  },
-  {
-    timestamps: true,
-  }
-);
+// Keep inStock in sync with stockQuantity
+productSchema.pre("save", function (next) {
+  this.inStock = this.stockQuantity > 0;
+  next();
+});
+
+// Virtual populate for reviews
+productSchema.virtual("reviews", {
+  ref: "Review",
+  foreignField: "product",
+  localField: "_id",
+});
+
+// Ensure virtuals are included when converting to JSON/Object
+productSchema.set("toObject", { virtuals: true });
+productSchema.set("toJSON", { virtuals: true });
+
 
 const Product = mongoose.model("Product", productSchema);
 export default Product;

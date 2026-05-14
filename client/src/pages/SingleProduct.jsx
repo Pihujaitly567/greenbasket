@@ -13,14 +13,32 @@ const SingleProduct = () => {
   const [relatedProducts, setRelatedProducts] = useState([]);
   const [rating, setRating] = useState(0);
   const [comment, setComment] = useState("");
+  const [reviews, setReviews] = useState([]);
 
   const product = products.find((product) => product._id === id);
+
+  const fetchReviews = async () => {
+    try {
+      const { data } = await axios.get(backendUrl + `/api/reviews/${id}`);
+      if (data.success) {
+        setReviews(data.reviews);
+      }
+    } catch (error) {
+      console.log("Error fetching reviews", error);
+    }
+  };
+
+  useEffect(() => {
+    if (id) {
+      fetchReviews();
+    }
+  }, [id]);
 
   const submitReview = async (e) => {
     e.preventDefault();
     try {
       const { data } = await axios.post(
-        backendUrl + "/api/product/review",
+        backendUrl + "/api/reviews",
         { rating, comment, productId: id },
         { withCredentials: true }
       );
@@ -28,7 +46,8 @@ const SingleProduct = () => {
         toast.success(data.message);
         setRating(0);
         setComment("");
-        fetchProducts(); // Refresh products to show new review
+        fetchReviews(); // Refresh reviews
+        fetchProducts(); // Refresh products to update average rating
       } else {
         toast.error(data.message);
       }
@@ -174,9 +193,9 @@ const SingleProduct = () => {
             {/* List Reviews */}
             <div className="flex flex-col gap-4">
               <h3 className="text-xl font-medium">Customer Reviews</h3>
-              {product.reviews && product.reviews.length > 0 ? (
-                product.reviews.map((review, index) => (
-                  <div key={index} className="border p-4 rounded-md bg-gray-50">
+              {reviews && reviews.length > 0 ? (
+                reviews.map((review, index) => (
+                  <div key={review._id || index} className="border p-4 rounded-md bg-gray-50">
                     <div className="flex items-center gap-2 mb-2">
                       <div className="flex text-yellow-500 text-sm">
                         {[...Array(5)].map((_, i) => (
@@ -185,7 +204,7 @@ const SingleProduct = () => {
                           </span>
                         ))}
                       </div>
-                      <span className="font-medium text-gray-700">{review.name}</span>
+                      <span className="font-medium text-gray-700">{review.user?.name || "Anonymous"}</span>
                     </div>
                     <p className="text-gray-600 text-sm">{review.comment}</p>
                     <p className="text-xs text-gray-400 mt-2">{new Date(review.createdAt).toLocaleDateString()}</p>

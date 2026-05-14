@@ -1,6 +1,7 @@
 import { useState, useEffect } from "react";
 import ProductCard from "../components/ProductCard";
 import { useAppContext } from "../context/AppContext";
+import Skeleton from "../components/Skeleton";
 
 const Products = () => {
   const { searchQuery, axios } = useAppContext();
@@ -65,8 +66,14 @@ const Products = () => {
       </div>
 
       {loading ? (
-        <div className="flex justify-center items-center h-64">
-          <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-indigo-600"></div>
+        <div className="my-6 grid grid-cols-1 sm:grid-cols-2 md:grid-cols-4 lg:grid-cols-5 gap-4">
+          {Array.from({ length: 10 }).map((_, index) => (
+            <div key={index} className="flex flex-col gap-2">
+              <Skeleton className="w-full h-48 rounded-lg" />
+              <Skeleton className="w-3/4 h-5" />
+              <Skeleton className="w-1/2 h-5" />
+            </div>
+          ))}
         </div>
       ) : (
         <>

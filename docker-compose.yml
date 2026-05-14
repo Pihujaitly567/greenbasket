@@ -1,0 +1,44 @@
+version: '3.8'
+
+services:
+  mongodb:
+    image: mongo:latest
+    container_name: greenbasket_db
+    ports:
+      - "27017:27017"
+    volumes:
+      - mongodb_data:/data/db
+    networks:
+      - greenbasket_network
+
+  backend:
+    build: ./backend
+    container_name: greenbasket_backend
+    ports:
+      - "4000:4000"
+    environment:
+      - PORT=4000
+      - MONGO_URI=mongodb://mongodb:27017/greenbasket
+      - JWT_SECRET=your_docker_jwt_secret
+      # Note: The rest of the ENV vars should be provided via .env file or GitHub secrets
+    depends_on:
+      - mongodb
+    networks:
+      - greenbasket_network
+
+  frontend:
+    build: ./client
+    container_name: greenbasket_frontend
+    ports:
+      - "80:80"
+    depends_on:
+      - backend
+    networks:
+      - greenbasket_network
+
+networks:
+  greenbasket_network:
+    driver: bridge
+
+volumes:
+  mongodb_data:

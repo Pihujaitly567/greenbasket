@@ -1,7 +1,9 @@
 import "./config/env.js";
 import express from "express";
+import http from "http";
 import cors from "cors";
 import cookieParser from "cookie-parser";
+import rateLimit from "express-rate-limit";
 import { connectDB } from "./config/connectDB.js";
 import userRoutes from "./routes/user.routes.js";
 import sellerRoutes from "./routes/seller.routes.js";
@@ -10,25 +12,63 @@ import cartRoutes from "./routes/cart.routes.js";
 import addressRoutes from "./routes/address.routes.js";
 import orderRoutes from "./routes/order.routes.js";
 import paymentRoutes from "./routes/payment.routes.js";
-
+import inventoryRoutes from "./routes/inventory.routes.js";
+import couponRoutes from "./routes/coupon.routes.js";
+import reviewRoutes from "./routes/review.routes.js";
 import { connectCloudinary } from "./config/cloudinary.js";
+import errorHandler from "./middlewares/errorHandler.js";
+import AppError from "./utils/AppError.js";
+import { initSocket } from "./config/socket.js";
 
 const app = express();
+const server = http.createServer(app);
+
+// Initialize Socket.io
+initSocket(server);
 
 // Connect to cloudinary
 connectCloudinary().catch(err => console.log("Cloudinary error:", err));
 
-// CORS configuration - allow all origins for now
+// Rate limiting — general (100 requests per 15 min per IP)
+const generalLimiter = rateLimit({
+  windowMs: 15 * 60 * 1000,
+  max: 100,
+  message: { success: false, message: "Too many requests, please try again later" },
+  standardHeaders: true,
+  legacyHeaders: false,
+});
+
+// Strict rate limiter for auth routes
+const authLimiter = rateLimit({
+  windowMs: 15 * 60 * 1000,
+  max: 100, // Increased for local testing
+  message: { success: false, message: "Too many login attempts, please try again after 15 minutes" },
+  standardHeaders: true,
+  legacyHeaders: false,
+});
+
+// CORS configuration
 app.use(cors({
   origin: true,
-  credentials: true
+  credentials: true,
 }));
 
 app.use(cookieParser());
 app.use(express.json());
 
-// Api endpoints
+// Apply general rate limiter to all API routes
+app.use("/api", generalLimiter);
+
+// Apply strict rate limiter to auth endpoints
+app.use("/api/user/login", authLimiter);
+app.use("/api/user/register", authLimiter);
+app.use("/api/seller/login", authLimiter);
+app.use("/api/seller/register", authLimiter);
+
+// Static files
 app.use("/images", express.static("uploads"));
+
+// API routes
 app.use("/api/user", userRoutes);
 app.use("/api/seller", sellerRoutes);
 app.use("/api/product", productRoutes);
@@ -36,14 +76,25 @@ app.use("/api/cart", cartRoutes);
 app.use("/api/address", addressRoutes);
 app.use("/api/order", orderRoutes);
 app.use("/api/payment", paymentRoutes);
+app.use("/api/inventory", inventoryRoutes);
+app.use("/api/coupon", couponRoutes);
+app.use("/api/reviews", reviewRoutes);
 
-// Health check endpoint
+// Health check
 app.get("/", (req, res) => {
-  res.json({ message: "GreenBasket API is running" });
+  res.json({ success: true, message: "GreenBasket API is running" });
 });
 
+// 404 catch-all for undefined routes
+app.use((req, res, next) => {
+  next(new AppError(`Cannot find ${req.method} ${req.originalUrl} on this server`, 404));
+});
+
+// Global error handler (must be last middleware)
+app.use(errorHandler);
+
 const PORT = process.env.PORT || 5000;
-app.listen(PORT, () => {
+server.listen(PORT, () => {
   connectDB();
   console.log(`Server is running on port ${PORT}`);
 });

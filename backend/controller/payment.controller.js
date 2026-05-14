@@ -1,69 +1,51 @@
 import Razorpay from "razorpay";
 import crypto from "crypto";
+import asyncHandler from "../utils/asyncHandler.js";
+import AppError from "../utils/AppError.js";
+import { sendSuccess } from "../utils/apiResponse.js";
 
-// Create Razorpay instance
 const razorpay = new Razorpay({
-    key_id: process.env.RAZORPAY_KEY_ID,
-    key_secret: process.env.RAZORPAY_KEY_SECRET,
+  key_id: process.env.RAZORPAY_KEY_ID,
+  key_secret: process.env.RAZORPAY_KEY_SECRET,
 });
 
-// Create Order
-export const createOrder = async (req, res) => {
-    try {
-        const { amount } = req.body; // Amount in smallest currency unit (paise for INR)
+// Create Order: /api/payment/create-order
+export const createOrder = asyncHandler(async (req, res) => {
+  const { amount } = req.body;
 
-        const options = {
-            amount: amount * 100, // razorpay accepts amount in paise
-            currency: "INR",
-            receipt: `receipt_order_${Date.now()}`,
-        };
+  if (!amount || amount <= 0) {
+    throw new AppError("Invalid amount", 400);
+  }
 
-        const order = await razorpay.orders.create(options);
+  const options = {
+    amount: amount * 100,
+    currency: "INR",
+    receipt: `receipt_order_${Date.now()}`,
+  };
 
-        res.status(200).json({
-            success: true,
-            order,
-        });
-    } catch (error) {
-        console.error("Error creating Razorpay order:", error);
-        res.status(500).json({
-            success: false,
-            message: "Something went wrong while creating order",
-        });
-    }
-};
+  const order = await razorpay.orders.create(options);
+  sendSuccess(res, 200, { order });
+});
 
-// Verify Payment
-export const verifyPayment = async (req, res) => {
-    try {
-        const { razorpay_order_id, razorpay_payment_id, razorpay_signature } = req.body;
+// Verify Payment: /api/payment/verify-payment
+export const verifyPayment = asyncHandler(async (req, res) => {
+  const { razorpay_order_id, razorpay_payment_id, razorpay_signature } = req.body;
 
-        const body = razorpay_order_id + "|" + razorpay_payment_id;
+  if (!razorpay_order_id || !razorpay_payment_id || !razorpay_signature) {
+    throw new AppError("Missing payment verification fields", 400);
+  }
 
-        const expectedSignature = crypto
-            .createHmac("sha256", process.env.RAZORPAY_KEY_SECRET)
-            .update(body.toString())
-            .digest("hex");
+  const body = razorpay_order_id + "|" + razorpay_payment_id;
+  const expectedSignature = crypto
+    .createHmac("sha256", process.env.RAZORPAY_KEY_SECRET)
+    .update(body.toString())
+    .digest("hex");
 
-        const isAuthentic = expectedSignature === razorpay_signature;
+  const isAuthentic = expectedSignature === razorpay_signature;
 
-        if (isAuthentic) {
-            // Database update logic comes here (already handled in frontend via separate placeOrder call, but could be consolidated)
-            res.status(200).json({
-                success: true,
-                message: "Payment verified successfully",
-            });
-        } else {
-            res.status(400).json({
-                success: false,
-                message: "Invalid signature",
-            });
-        }
-    } catch (error) {
-        console.error("Error verifying payment:", error);
-        res.status(500).json({
-            success: false,
-            message: "Internal Server Error",
-        });
-    }
-};
+  if (!isAuthentic) {
+    throw new AppError("Payment verification failed — invalid signature", 400);
+  }
+
+  sendSuccess(res, 200, {}, "Payment verified successfully");
+});

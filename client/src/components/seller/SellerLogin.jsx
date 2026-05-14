@@ -43,81 +43,120 @@ const SellerLogin = () => {
         }
       }
     } catch (error) {
-      toast.error(error.message);
+      toast.error(error.response?.data?.message || error.message);
+    }
+  };
+
+  const handleDemoLogin = async () => {
+    try {
+      const { data } = await axios.post("/api/seller/login", {
+        email: "admin@gmail.com",
+        password: "admin123",
+      });
+      if (data.success) {
+        setIsSeller(true);
+        navigate("/seller");
+        toast.success("Demo Login successful");
+      } else {
+        toast.error(data.message);
+      }
+    } catch (error) {
+      toast.error(error.response?.data?.message || error.message);
     }
   };
   return (
     !isSeller && (
-      <div className="fixed top-0 left-0 bottom-0 right-0 z-30 flex items-center justify-center  bg-black/50 text-gray-600">
+      <div className="fixed top-0 left-0 bottom-0 right-0 z-30 flex items-center justify-center bg-gray-900/40 backdrop-blur-sm text-gray-800">
         <form
           onSubmit={handleSubmit}
-          className="flex flex-col gap-4 m-auto items-start p-8 py-12 w-80 sm:w-[352px] rounded-lg shadow-xl border border-gray-200 bg-white"
+          className="flex flex-col gap-5 m-auto items-start p-8 py-10 w-[90%] max-w-md rounded-2xl shadow-2xl border border-white/20 bg-white"
         >
-          <p className="text-2xl font-medium m-auto">
-            <span className="text-indigo-500">Seller</span> {currState}
-          </p>
+          <div className="w-full text-center mb-2">
+             <p className="text-3xl font-bold tracking-tight text-gray-900">
+               <span className="text-green-600">Partner</span> {currState}
+             </p>
+             <p className="text-sm text-gray-500 mt-2">Manage your inventory and orders seamlessly.</p>
+          </div>
 
-          {currState === "Sign Up" && (
             <div className="w-full">
-              <p>Name</p>
+              <p className="text-sm font-medium text-gray-700 mb-1">Company Name</p>
               <input
                 onChange={(e) => setName(e.target.value)}
                 value={name}
-                placeholder="type here"
-                className="border border-gray-200 rounded w-full p-2 mt-1 outline-indigo-500"
+                placeholder="Green Farms LLC"
+                className="border border-gray-300 rounded-lg w-full p-3 bg-gray-50 focus:bg-white focus:ring-2 focus:ring-green-500 focus:border-transparent outline-none transition-all"
                 type="text"
                 required
               />
             </div>
           )}
 
-          <div className="w-full ">
-            <p>Email</p>
+          <div className="w-full">
+            <p className="text-sm font-medium text-gray-700 mb-1">Email Address</p>
             <input
               onChange={(e) => setEmail(e.target.value)}
               value={email}
-              placeholder="type here"
-              className="border border-gray-200 rounded w-full p-2 mt-1 outline-indigo-500"
+              placeholder="admin@example.com"
+              className="border border-gray-300 rounded-lg w-full p-3 bg-gray-50 focus:bg-white focus:ring-2 focus:ring-green-500 focus:border-transparent outline-none transition-all"
               type="email"
               required
             />
           </div>
-          <div className="w-full ">
-            <p>Password</p>
+          <div className="w-full">
+            <p className="text-sm font-medium text-gray-700 mb-1">Password</p>
             <input
               onChange={(e) => setPassword(e.target.value)}
               value={password}
-              placeholder="type here"
-              className="border border-gray-200 rounded w-full p-2 mt-1 outline-indigo-500"
+              placeholder="••••••••"
+              className="border border-gray-300 rounded-lg w-full p-3 bg-gray-50 focus:bg-white focus:ring-2 focus:ring-green-500 focus:border-transparent outline-none transition-all"
               type="password"
               required
             />
           </div>
-          <button className="bg-indigo-500 hover:bg-indigo-600 transition-all text-white w-full py-2 rounded-md cursor-pointer">
-            {currState === "Login" ? "Login" : "Create Account"}
+          <button className="bg-gray-900 hover:bg-gray-800 shadow-md shadow-gray-900/20 active:scale-[0.98] transition-all text-white font-semibold w-full py-3 rounded-lg cursor-pointer mt-2">
+            {currState === "Login" ? "Sign In" : "Register as Partner"}
           </button>
 
-          {currState === "Login" ? (
-            <p className="text-sm text-center w-full mt-2">
-              No account?{" "}
-              <span
-                onClick={() => setCurrState("Sign Up")}
-                className="text-indigo-500 cursor-pointer font-medium"
+          {currState === "Login" && (
+            <>
+              <div className="w-full flex items-center gap-4 my-2 opacity-60">
+                <div className="h-px bg-gray-300 flex-1"></div>
+                <span className="text-xs uppercase font-medium">Or</span>
+                <div className="h-px bg-gray-300 flex-1"></div>
+              </div>
+              <button
+                type="button"
+                onClick={handleDemoLogin}
+                className="bg-white border border-gray-200 hover:bg-gray-50 shadow-sm active:scale-[0.98] transition-all text-gray-800 font-medium w-full py-3 rounded-lg cursor-pointer flex items-center justify-center gap-2"
               >
-                Sign up here
-              </span>
-            </p>
-          ) : (
-            <p className="text-sm text-center w-full mt-2">
-              Already have an account?{" "}
-              <span
-                onClick={() => setCurrState("Login")}
-                className="text-indigo-500 cursor-pointer font-medium"
-              >
-                Login here
-              </span>
-            </p>
+                🚀 Demo Partner Login
+              </button>
+            </>
           )}
+
+          <div className="w-full text-center mt-4">
+            {currState === "Login" ? (
+              <p className="text-sm text-gray-600">
+                New to GreenBasket?{" "}
+                <span
+                  onClick={() => setCurrState("Sign Up")}
+                  className="text-green-600 hover:text-green-700 font-medium cursor-pointer transition-colors"
+                >
+                  Apply now
+                </span>
+              </p>
+            ) : (
+              <p className="text-sm text-gray-600">
+                Already a partner?{" "}
+                <span
+                  onClick={() => setCurrState("Login")}
+                  className="text-green-600 hover:text-green-700 font-medium cursor-pointer transition-colors"
+                >
+                  Sign in
+                </span>
+              </p>
+            )}
+          </div>
         </form>
       </div>
     )
