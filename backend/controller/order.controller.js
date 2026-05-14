@@ -1,4 +1,5 @@
 import mongoose from "mongoose";
+import AppError from "../utils/AppError.js";
 import Order from "../models/order.model.js";
 import Product from "../models/product.model.js";
 import asyncHandler from "../utils/asyncHandler.js";
