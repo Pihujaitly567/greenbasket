@@ -17,7 +17,8 @@ export const placeOrderCOD = asyncHandler(async (req, res) => {
   let amount = 0;
   const stockUpdates = [];
   for (const item of items) {
-    const product = await Product.findById(item.product);
+    const productObjectId = new mongoose.Types.ObjectId(item.product);
+    const product = await Product.findById(productObjectId);
     if (!product) {
       throw new AppError(`Product not found: ${item.product}`, 404);
     }
@@ -28,7 +29,10 @@ export const placeOrderCOD = asyncHandler(async (req, res) => {
       );
     }
     amount += product.offerPrice * item.quantity;
-    stockUpdates.push({ productId: item.product, quantity: item.quantity });
+    stockUpdates.push({ productId: productObjectId, quantity: item.quantity });
+    
+    // Mutate the original item so Order.create uses the ObjectId natively
+    item.product = productObjectId;
   }
   amount += Math.floor((amount * 2) / 100);
   if (discountAmount && discountAmount > 0) {
