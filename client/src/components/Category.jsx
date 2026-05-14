@@ -1,11 +1,9 @@
 import { useRef } from "react";
 import { categories } from "../assets/assets";
 import { useAppContext } from "../context/AppContext";
-
 const Category = () => {
   const { navigate } = useAppContext();
   const scrollRef = useRef(null);
-
   const scroll = (direction) => {
     if (scrollRef.current) {
       const scrollAmount = 200;
@@ -15,7 +13,6 @@ const Category = () => {
       });
     }
   };
-
   return (
     <div className="mt-16">
       <div className="flex items-center justify-between mb-6">

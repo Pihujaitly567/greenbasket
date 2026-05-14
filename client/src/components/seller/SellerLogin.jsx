@@ -7,13 +7,11 @@ const SellerLogin = () => {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [name, setName] = useState("");
-
   useEffect(() => {
     if (isSeller) {
       navigate("/seller");
     }
   }, [isSeller]);
-
   const handleSubmit = async (e) => {
     try {
       e.preventDefault();
@@ -46,7 +44,6 @@ const SellerLogin = () => {
       toast.error(error.response?.data?.message || error.message);
     }
   };
-
   const handleDemoLogin = async () => {
     try {
       const { data } = await axios.post("/api/seller/login", {
@@ -77,7 +74,6 @@ const SellerLogin = () => {
              </p>
              <p className="text-sm text-gray-500 mt-2">Manage your inventory and orders seamlessly.</p>
           </div>
-
             <div className="w-full">
               <p className="text-sm font-medium text-gray-700 mb-1">Company Name</p>
               <input
@@ -90,7 +86,6 @@ const SellerLogin = () => {
               />
             </div>
           )}
-
           <div className="w-full">
             <p className="text-sm font-medium text-gray-700 mb-1">Email Address</p>
             <input
@@ -116,7 +111,6 @@ const SellerLogin = () => {
           <button className="bg-gray-900 hover:bg-gray-800 shadow-md shadow-gray-900/20 active:scale-[0.98] transition-all text-white font-semibold w-full py-3 rounded-lg cursor-pointer mt-2">
             {currState === "Login" ? "Sign In" : "Register as Partner"}
           </button>
-
           {currState === "Login" && (
             <>
               <div className="w-full flex items-center gap-4 my-2 opacity-60">
@@ -133,7 +127,6 @@ const SellerLogin = () => {
               </button>
             </>
           )}
-
           <div className="w-full text-center mt-4">
             {currState === "Login" ? (
               <p className="text-sm text-gray-600">

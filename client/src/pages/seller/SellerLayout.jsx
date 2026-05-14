@@ -14,7 +14,6 @@ const SellerLayout = () => {
     },
     { name: "Orders", path: "/seller/orders", icon: assets.order_icon },
   ];
-
   const logout = async () => {
     try {
       const { data } = await axios.get("/api/seller/logout");

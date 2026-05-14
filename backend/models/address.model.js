@@ -11,6 +11,5 @@ const addressSchema = new mongoose.Schema({
   country: { type: String, required: true },
   phone: { type: String, required: true },
 });
-
 const Address = mongoose.model("Address", addressSchema);
 export default Address;

@@ -1,12 +1,9 @@
 import { useContext, useEffect, useState } from "react";
 import { AppContext, useAppContext } from "../../context/AppContext";
-
 import toast from "react-hot-toast";
-
 const Orders = () => {
   const boxIcon =
     "https://raw.githubusercontent.com/prebuiltui/prebuiltui/main/assets/e-commerce/boxIcon.svg";
-
   const [orders, setOrders] = useState([]);
   const { axios, backendUrl } = useAppContext();
   const fetchOrders = async () => {
@@ -24,7 +21,6 @@ const Orders = () => {
   useEffect(() => {
     fetchOrders();
   }, []);
-
   const changeOrderStatus = async (id, status) => {
     try {
       const { data } = await axios.post("/api/order/status", {
@@ -41,7 +37,6 @@ const Orders = () => {
       toast.error(error.message);
     }
   };
-
   return (
     <div className="md:p-10 p-4 space-y-4">
       <h2 className="text-lg font-medium">Orders List</h2>
@@ -72,7 +67,6 @@ const Orders = () => {
               ))}
             </>
           </div>
-
           <div className="text-sm">
             <p className="font-medium mb-1">
               {order.address?.firstName || "Unknown"} {order.address?.lastName || ""}
@@ -83,16 +77,13 @@ const Orders = () => {
               {order.address?.country || ""}
             </p>
           </div>
-
           <p className="font-medium text-base my-auto text-black/70">
             ₹{order.amount}
           </p>
-
           <div className="flex flex-col text-sm gap-2">
             <p>Method: {order.paymentType}</p>
             <p>Date: {new Date(order.createdAt).toLocaleDateString()}</p>
             <p>Payment: {order.isPaid ? "Paid" : "Pending"}</p>
-
             <select
               onChange={(e) => changeOrderStatus(order._id, e.target.value)}
               value={order.status}

@@ -2,24 +2,18 @@ import Product from "../models/product.model.js";
 import asyncHandler from "../utils/asyncHandler.js";
 import AppError from "../utils/AppError.js";
 import { sendSuccess } from "../utils/apiResponse.js";
-
-// Restock product: /api/inventory/restock
 export const restockProduct = asyncHandler(async (req, res) => {
   const { productId, quantity } = req.body;
-
   if (!productId || !quantity || quantity <= 0) {
     throw new AppError("Product ID and a positive quantity are required", 400);
   }
-
   const product = await Product.findById(productId);
   if (!product) {
     throw new AppError("Product not found", 404);
   }
-
   product.stockQuantity += quantity;
   product.inStock = true;
   await product.save();
-
   sendSuccess(res, 200, {
     product: {
       _id: product._id,
@@ -29,23 +23,17 @@ export const restockProduct = asyncHandler(async (req, res) => {
     },
   }, `Restocked ${quantity} units of ${product.name}`);
 });
-
-// Get low stock products: /api/inventory/low-stock
 export const getLowStockProducts = asyncHandler(async (req, res) => {
   const threshold = parseInt(req.query.threshold) || 10;
-
   const products = await Product.find({ stockQuantity: { $lte: threshold } })
     .select("name category stockQuantity inStock image")
     .sort({ stockQuantity: 1 });
-
   sendSuccess(res, 200, {
     products,
     count: products.length,
     threshold,
   });
 });
-
-// Get inventory overview: /api/inventory/overview
 export const getInventoryOverview = asyncHandler(async (req, res) => {
   const stats = await Product.aggregate([
     {
@@ -63,7 +51,6 @@ export const getInventoryOverview = asyncHandler(async (req, res) => {
       },
     },
   ]);
-
   const categoryStock = await Product.aggregate([
     {
       $group: {
@@ -74,7 +61,6 @@ export const getInventoryOverview = asyncHandler(async (req, res) => {
     },
     { $sort: { totalStock: -1 } },
   ]);
-
   sendSuccess(res, 200, {
     stats: stats[0] || { totalProducts: 0, totalStock: 0, outOfStock: 0, lowStock: 0, avgStock: 0 },
     categoryStock,

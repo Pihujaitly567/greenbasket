@@ -1,6 +1,5 @@
 import { Link } from "react-router-dom";
 import { assets } from "../assets/assets";
-
 const Banner = () => {
   return (
     <div className="relative">

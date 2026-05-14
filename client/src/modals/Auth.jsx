@@ -7,7 +7,6 @@ const Auth = () => {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const { setShowUserLogin, setUser, axios, navigate } = useAppContext();
-
   const handleSubmit = async (e) => {
     try {
       e.preventDefault();
@@ -28,17 +27,14 @@ const Auth = () => {
       toast.error(error.response?.data?.message || "An error occurred");
     }
   };
-
   const handleDemoLogin = async () => {
     try {
       const demoEmail = "demo@example.com";
       const demoPassword = "demo123";
-      
       const loginRes = await axios.post("/api/user/login", {
         email: demoEmail,
         password: demoPassword,
       });
-
       if (loginRes.data.success) {
         toast.success("Demo Login successful");
         navigate("/");
@@ -48,18 +44,15 @@ const Auth = () => {
         throw new Error(loginRes.data.message);
       }
     } catch (error) {
-      // If login fails, try to register the demo account automatically
       try {
         const demoEmail = "demo@example.com";
         const demoPassword = "demo123";
         const demoName = "Demo User";
-
         const regRes = await axios.post("/api/user/register", {
           name: demoName,
           email: demoEmail,
           password: demoPassword,
         });
-
         if (regRes.data.success) {
           toast.success("Demo account created and logged in!");
           navigate("/");
@@ -153,7 +146,6 @@ const Auth = () => {
             <div className="h-px bg-gray-300 flex-1"></div>
           </div>
         )}
-
         {state === "login" && (
           <button
             type="button"
@@ -163,7 +155,6 @@ const Auth = () => {
             🚀 Demo Login
           </button>
         )}
-        
         <div className="w-full text-center mt-4">
           <p className="text-sm text-gray-500">
             Are you a seller?{" "}

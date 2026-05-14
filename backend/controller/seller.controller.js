@@ -6,38 +6,27 @@ import bcrypt from "bcryptjs";
 import asyncHandler from "../utils/asyncHandler.js";
 import AppError from "../utils/AppError.js";
 import { sendSuccess } from "../utils/apiResponse.js";
-
-// seller register: /api/seller/register
 export const registerSeller = asyncHandler(async (req, res) => {
   const { name, email, password } = req.body;
-
   const existingSeller = await Seller.findOne({ email });
   if (existingSeller) {
     throw new AppError("Seller already exists with this email", 400);
   }
-
   const hashedPassword = await bcrypt.hash(password, 10);
   const newSeller = await Seller.create({ name, email, password: hashedPassword });
-
   const token = jwt.sign({ id: newSeller._id }, process.env.JWT_SECRET, {
     expiresIn: "7d",
   });
-
   res.cookie("sellerToken", token, {
     httpOnly: true,
     secure: process.env.NODE_ENV === "production",
     sameSite: process.env.NODE_ENV === "production" ? "none" : "Strict",
     maxAge: 7 * 24 * 60 * 60 * 1000,
   });
-
   sendSuccess(res, 201, {}, "Seller created successfully");
 });
-
-// seller login: /api/seller/login
 export const sellerLogin = asyncHandler(async (req, res) => {
   const { email, password } = req.body;
-
-  // Check hardcoded admin as fallback
   if (
     email === process.env.SELLER_EMAIL &&
     password === process.env.SELLER_PASSWORD
@@ -51,37 +40,28 @@ export const sellerLogin = asyncHandler(async (req, res) => {
     });
     return sendSuccess(res, 200, {}, "Login successful");
   }
-
   const seller = await Seller.findOne({ email });
   if (!seller) {
     throw new AppError("Invalid credentials", 401);
   }
-
   const isMatch = await bcrypt.compare(password, seller.password);
   if (!isMatch) {
     throw new AppError("Invalid credentials", 401);
   }
-
   const token = jwt.sign({ id: seller._id }, process.env.JWT_SECRET, {
     expiresIn: "7d",
   });
-
   res.cookie("sellerToken", token, {
     httpOnly: true,
     secure: process.env.NODE_ENV === "production",
     sameSite: process.env.NODE_ENV === "production" ? "none" : "Strict",
     maxAge: 7 * 24 * 60 * 60 * 1000,
   });
-
   sendSuccess(res, 200, {}, "Login successful");
 });
-
-// check seller auth: /api/seller/is-auth
 export const checkAuth = asyncHandler(async (req, res) => {
   sendSuccess(res, 200);
 });
-
-// logout seller: /api/seller/logout
 export const sellerLogout = asyncHandler(async (req, res) => {
   res.clearCookie("sellerToken", {
     httpOnly: true,
@@ -90,22 +70,15 @@ export const sellerLogout = asyncHandler(async (req, res) => {
   });
   sendSuccess(res, 200, {}, "Logged out successfully");
 });
-
-// get seller analytics: /api/seller/analytics
 export const getSellerAnalytics = asyncHandler(async (req, res) => {
   const totalProducts = await Product.countDocuments();
   const totalOrders = await Order.countDocuments();
-
-  // Calculate total sales from paid/COD orders
   const orders = await Order.find({
     $or: [{ paymentType: "COD" }, { isPaid: true }],
   });
   const totalSales = orders.reduce((acc, order) => acc + order.amount, 0);
-
-  // Daily sales for the last 7 days
   const sevenDaysAgo = new Date();
   sevenDaysAgo.setDate(sevenDaysAgo.getDate() - 7);
-
   const salesData = await Order.aggregate([
     {
       $match: {
@@ -122,8 +95,6 @@ export const getSellerAnalytics = asyncHandler(async (req, res) => {
     },
     { $sort: { _id: 1 } },
   ]);
-
-  // Advanced: Revenue by category
   const categoryRevenue = await Order.aggregate([
     { $match: { $or: [{ paymentType: "COD" }, { isPaid: true }] } },
     { $unwind: "$items" },
@@ -146,8 +117,6 @@ export const getSellerAnalytics = asyncHandler(async (req, res) => {
     },
     { $sort: { revenue: -1 } },
   ]);
-
-  // Advanced: Top 5 selling products
   const topProducts = await Order.aggregate([
     { $match: { $or: [{ paymentType: "COD" }, { isPaid: true }] } },
     { $unwind: "$items" },
@@ -177,8 +146,6 @@ export const getSellerAnalytics = asyncHandler(async (req, res) => {
       },
     },
   ]);
-
-  // Advanced: Order Status Breakdown
   const orderStatusBreakdown = await Order.aggregate([
     {
       $group: {
@@ -187,7 +154,6 @@ export const getSellerAnalytics = asyncHandler(async (req, res) => {
       },
     },
   ]);
-
   sendSuccess(res, 200, {
     stats: { totalProducts, totalOrders, totalSales },
     salesData,

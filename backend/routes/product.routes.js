@@ -17,16 +17,12 @@ import {
   reviewSchema,
   stockSchema,
 } from "../validators/product.validator.js";
-
 const router = express.Router();
-
-// Validation for add/update is tricky with multipart — validated in controller
 router.post("/add-product", authSeller, upload.array("image", 4), addProduct);
 router.get("/list", getProducts);
 router.get("/id", getProductById);
 router.post("/stock", authSeller, validate(stockSchema), changeStock);
-router.post("/seed", authSeller, seedProducts); // Protected behind seller auth now
+router.post("/seed", authSeller, seedProducts); 
 router.post("/delete", authSeller, validate(productIdSchema), deleteProduct);
 router.post("/update", authSeller, upload.array("image", 4), updateProduct);
-
 export default router;

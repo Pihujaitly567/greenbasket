@@ -1,6 +1,5 @@
 import jwt from "jsonwebtoken";
 import User from "../models/user.model.js";
-
 const authUser = async (req, res, next) => {
   const { token } = req.cookies;
   if (!token) {
@@ -19,5 +18,4 @@ const authUser = async (req, res, next) => {
     return res.status(401).json({ message: "Invalid token", success: false });
   }
 };
-
 export default authUser;

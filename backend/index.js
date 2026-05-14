@@ -19,17 +19,10 @@ import { connectCloudinary } from "./config/cloudinary.js";
 import errorHandler from "./middlewares/errorHandler.js";
 import AppError from "./utils/AppError.js";
 import { initSocket } from "./config/socket.js";
-
 const app = express();
 const server = http.createServer(app);
-
-// Initialize Socket.io
 initSocket(server);
-
-// Connect to cloudinary
 connectCloudinary().catch(err => console.log("Cloudinary error:", err));
-
-// Rate limiting — general (100 requests per 15 min per IP)
 const generalLimiter = rateLimit({
   windowMs: 15 * 60 * 1000,
   max: 100,
@@ -37,38 +30,25 @@ const generalLimiter = rateLimit({
   standardHeaders: true,
   legacyHeaders: false,
 });
-
-// Strict rate limiter for auth routes
 const authLimiter = rateLimit({
   windowMs: 15 * 60 * 1000,
-  max: 100, // Increased for local testing
+  max: 100, 
   message: { success: false, message: "Too many login attempts, please try again after 15 minutes" },
   standardHeaders: true,
   legacyHeaders: false,
 });
-
-// CORS configuration
 app.use(cors({
   origin: true,
   credentials: true,
 }));
-
 app.use(cookieParser());
 app.use(express.json());
-
-// Apply general rate limiter to all API routes
 app.use("/api", generalLimiter);
-
-// Apply strict rate limiter to auth endpoints
 app.use("/api/user/login", authLimiter);
 app.use("/api/user/register", authLimiter);
 app.use("/api/seller/login", authLimiter);
 app.use("/api/seller/register", authLimiter);
-
-// Static files
 app.use("/images", express.static("uploads"));
-
-// API routes
 app.use("/api/user", userRoutes);
 app.use("/api/seller", sellerRoutes);
 app.use("/api/product", productRoutes);
@@ -79,20 +59,13 @@ app.use("/api/payment", paymentRoutes);
 app.use("/api/inventory", inventoryRoutes);
 app.use("/api/coupon", couponRoutes);
 app.use("/api/reviews", reviewRoutes);
-
-// Health check
 app.get("/", (req, res) => {
   res.json({ success: true, message: "GreenBasket API is running" });
 });
-
-// 404 catch-all for undefined routes
 app.use((req, res, next) => {
   next(new AppError(`Cannot find ${req.method} ${req.originalUrl} on this server`, 404));
 });
-
-// Global error handler (must be last middleware)
 app.use(errorHandler);
-
 const PORT = process.env.PORT || 5000;
 server.listen(PORT, () => {
   connectDB();

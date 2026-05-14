@@ -1,5 +1,4 @@
 import mongoose from "mongoose";
-
 const orderSchema = new mongoose.Schema(
   {
     userId: {
@@ -44,8 +43,6 @@ const orderSchema = new mongoose.Schema(
   },
   { timestamps: true }
 );
-
-// Push initial status to history on creation
 orderSchema.pre("save", function (next) {
   if (this.isNew) {
     this.statusHistory.push({
@@ -56,6 +53,5 @@ orderSchema.pre("save", function (next) {
   }
   next();
 });
-
 const Order = mongoose.model("Order", orderSchema);
 export default Order;

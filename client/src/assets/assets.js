@@ -1,4 +1,3 @@
-// LOGO & GENERAL ICONS
 import logo from "./Green-Basket-logo1.png";
 import search_icon from "./search_icon.svg";
 import remove_icon from "./remove_icon.svg";
@@ -36,20 +35,14 @@ import top_ramen_image from "./top_ramen_image.png";
 import knorr_soup_image from "./knorr_soup_image.png";
 import yippee_image from "./yippee_image.png";
 import maggi_oats_image from "./maggi_oats_image.png";
-
-
-// CATEGORY IMAGES (original)
 import organic_vegitable_image from "./organic_vegitable_image.png";
 import fresh_fruits_image from "./fresh_fruits_image.png";
 import dairy_product_image from "./dairy_product_image.png";
 import bakery_image from "./bakery_image.png";
 import grain_image from "./grain_image.png";
-
-// ⭐ NEW CATEGORY IMAGES YOU ADDED (PNG)
 import organic_jams from "./jams.png";
 import cold_beverages from "./beverages.png";
 import healthy_snacks from "./snacks.png";
-
 export const assets = {
   logo,
   search_icon,
@@ -79,8 +72,6 @@ export const assets = {
   add_address_iamge,
   box_icon,
 };
-
-// ⭐ UPDATED CATEGORY LIST (3 new ones added)
 export const categories = [
   {
     text: "Organic Vegetables",
@@ -131,4 +122,3 @@ export const categories = [
     bgColor: "#F1E3F9",
   },
 ];
-

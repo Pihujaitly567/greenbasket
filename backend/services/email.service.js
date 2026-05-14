@@ -1,5 +1,4 @@
 import nodemailer from "nodemailer";
-
 const transporter = nodemailer.createTransport({
   service: "gmail",
   auth: {
@@ -7,27 +6,23 @@ const transporter = nodemailer.createTransport({
     pass: process.env.EMAIL_PASS || "your-app-password-here",
   },
 });
-
 export const sendEmail = async (to, subject, html) => {
   try {
     if (!process.env.EMAIL_PASS) {
       console.log(`[Email Mock] To: ${to} | Subject: ${subject}`);
-      return; // Skip actual sending if no password
+      return; 
     }
-
     const mailOptions = {
       from: `"GreenBasket" <${process.env.EMAIL_USER || "pihu.jaitly2024@nst.rishihood.edu.in"}>`,
       to,
       subject,
       html,
     };
-
     await transporter.sendMail(mailOptions);
   } catch (error) {
     console.error("Error sending email:", error);
   }
 };
-
 export const sendWelcomeEmail = async (userEmail, userName) => {
   const subject = "Welcome to GreenBasket!";
   const html = `
@@ -36,7 +31,6 @@ export const sendWelcomeEmail = async (userEmail, userName) => {
   `;
   await sendEmail(userEmail, subject, html);
 };
-
 export const sendOrderConfirmationEmail = async (userEmail, orderId, amount) => {
   const subject = "Order Confirmation - GreenBasket";
   const html = `
@@ -47,7 +41,6 @@ export const sendOrderConfirmationEmail = async (userEmail, orderId, amount) => 
   `;
   await sendEmail(userEmail, subject, html);
 };
-
 export const sendOrderStatusEmail = async (userEmail, orderId, status) => {
   const subject = `Order Update: ${status} - GreenBasket`;
   const html = `

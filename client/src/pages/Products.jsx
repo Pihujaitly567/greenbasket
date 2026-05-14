@@ -2,7 +2,6 @@ import { useState, useEffect } from "react";
 import ProductCard from "../components/ProductCard";
 import { useAppContext } from "../context/AppContext";
 import Skeleton from "../components/Skeleton";
-
 const Products = () => {
   const { searchQuery, axios } = useAppContext();
   const [products, setProducts] = useState([]);
@@ -10,7 +9,6 @@ const Products = () => {
   const [totalPages, setTotalPages] = useState(1);
   const [loading, setLoading] = useState(false);
   const [sortBy, setSortBy] = useState("newest");
-
   const fetchPagedProducts = async (page, search = "", sort = "newest") => {
     try {
       setLoading(true);
@@ -30,22 +28,18 @@ const Products = () => {
       setLoading(false);
     }
   };
-
   useEffect(() => {
     fetchPagedProducts(currentPage, searchQuery, sortBy);
   }, [currentPage, searchQuery, sortBy]);
-
   const handlePageChange = (newPage) => {
     if (newPage >= 1 && newPage <= totalPages) {
       setCurrentPage(newPage);
     }
   };
-
   const handleSortChange = (e) => {
     setSortBy(e.target.value);
-    setCurrentPage(1); // Reset to first page on sort change
+    setCurrentPage(1); 
   };
-
   return (
     <div className="mt-16 pb-12">
       <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
@@ -64,7 +58,6 @@ const Products = () => {
           </select>
         </div>
       </div>
-
       {loading ? (
         <div className="my-6 grid grid-cols-1 sm:grid-cols-2 md:grid-cols-4 lg:grid-cols-5 gap-4">
           {Array.from({ length: 10 }).map((_, index) => (
@@ -91,7 +84,6 @@ const Products = () => {
                 ))}
             </div>
           )}
-
           {totalPages > 1 && (
             <div className="flex justify-center items-center mt-10 gap-4">
               <button
@@ -104,11 +96,9 @@ const Products = () => {
               >
                 Previous
               </button>
-
               <span className="text-gray-600 font-medium">
                 Page {currentPage} of {totalPages}
               </span>
-
               <button
                 onClick={() => handlePageChange(currentPage + 1)}
                 disabled={currentPage === totalPages}
@@ -127,4 +117,3 @@ const Products = () => {
   );
 };
 export default Products;
-

@@ -1,6 +1,4 @@
 import mongoose from "mongoose";
-
-
 const productSchema = new mongoose.Schema(
   {
     name: {
@@ -60,24 +58,16 @@ const productSchema = new mongoose.Schema(
     timestamps: true,
   }
 );
-
-// Keep inStock in sync with stockQuantity
 productSchema.pre("save", function (next) {
   this.inStock = this.stockQuantity > 0;
   next();
 });
-
-// Virtual populate for reviews
 productSchema.virtual("reviews", {
   ref: "Review",
   foreignField: "product",
   localField: "_id",
 });
-
-// Ensure virtuals are included when converting to JSON/Object
 productSchema.set("toObject", { virtuals: true });
 productSchema.set("toJSON", { virtuals: true });
-
-
 const Product = mongoose.model("Product", productSchema);
 export default Product;

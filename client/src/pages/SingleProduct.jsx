@@ -5,7 +5,6 @@ import { assets } from "../assets/assets";
 import ProductCard from "../components/ProductCard";
 import axios from "axios";
 import { toast } from "react-hot-toast";
-
 const SingleProduct = () => {
   const { products, navigate, addToCart, backendUrl, fetchProducts } = useAppContext();
   const { id } = useParams();
@@ -14,9 +13,7 @@ const SingleProduct = () => {
   const [rating, setRating] = useState(0);
   const [comment, setComment] = useState("");
   const [reviews, setReviews] = useState([]);
-
   const product = products.find((product) => product._id === id);
-
   const fetchReviews = async () => {
     try {
       const { data } = await axios.get(backendUrl + `/api/reviews/${id}`);
@@ -27,13 +24,11 @@ const SingleProduct = () => {
       console.log("Error fetching reviews", error);
     }
   };
-
   useEffect(() => {
     if (id) {
       fetchReviews();
     }
   }, [id]);
-
   const submitReview = async (e) => {
     e.preventDefault();
     try {
@@ -55,7 +50,6 @@ const SingleProduct = () => {
       toast.error(error.response?.data?.message || "Error submitting review");
     }
   };
-
   useEffect(() => {
     if (products.length > 0) {
       let productsCopy = products.slice();
@@ -65,7 +59,6 @@ const SingleProduct = () => {
       setRelatedProducts(productsCopy.slice(0, 5));
     }
   }, [products, product]);
-
   useEffect(() => {
     setThumbnail(product?.image[0] ? product.image[0] : null);
   }, [product]);
@@ -80,7 +73,6 @@ const SingleProduct = () => {
           </Link>{" "}
           /<span className="text-indigo-500"> {product.name}</span>
         </p>
-
         <div className="flex flex-col md:flex-row gap-16 mt-4">
           <div className="flex gap-3">
             <div className="flex flex-col gap-3">
@@ -97,7 +89,6 @@ const SingleProduct = () => {
                 </div>
               ))}
             </div>
-
             <div className="border border-gray-500/30 w-96 h-96 rounded overflow-hidden bg-white flex items-center justify-center">
               <img
                 src={`${backendUrl}/images/${thumbnail}`}
@@ -106,10 +97,8 @@ const SingleProduct = () => {
               />
             </div>
           </div>
-
           <div className="text-sm w-full md:w-1/2">
             <h1 className="text-3xl font-medium">{product.name}</h1>
-
             <div className="flex items-center gap-0.5 mt-1">
               {[...Array(5)].map((_, i) => (
                 <img
@@ -121,7 +110,6 @@ const SingleProduct = () => {
               ))}
               <p className="text-base ml-2">({product.numReviews || 0} reviews)</p>
             </div>
-
             <div className="mt-6">
               <p className="text-gray-500/70 line-through">
                 MRP: ₹{product.price}
@@ -129,14 +117,12 @@ const SingleProduct = () => {
               <p className="text-2xl font-medium">MRP: ₹{product.offerPrice}</p>
               <span className="text-gray-500/70">(inclusive of all taxes)</span>
             </div>
-
             <p className="text-base font-medium mt-6">About Product</p>
             <ul className="list-disc ml-4 text-gray-500/70">
               {product.description.map((desc, index) => (
                 <li key={index}>{desc}</li>
               ))}
             </ul>
-
             <div className="flex items-center mt-10 gap-4 text-base">
               <button
                 onClick={() => addToCart(product._id)}
@@ -157,13 +143,12 @@ const SingleProduct = () => {
             </div>
           </div>
         </div>
-        {/* related prodcuts  */}
+        {}
         <div className="flex flex-col items-center mt-20">
           <div className="flex flex-col items-center w-max">
             <p className="text-2xl font-medium">Related Products</p>
             <div className="w-20 h-0.5 bg-primary rounded-full mt-2"></div>
           </div>
-
           <div className="my-6 grid grid-cols-1 sm:grid-cols-2 md:grid-cols-4 lg:grid-cols-5 gap-4 items-center justify-center">
             {relatedProducts
               .filter((product) => product.inStock)
@@ -181,16 +166,14 @@ const SingleProduct = () => {
             See More
           </button>
         </div>
-
-        {/* Reviews Section */}
+        {}
         <div className="mt-20">
           <div className="flex flex-col items-center w-max mb-6">
             <p className="text-2xl font-medium">Reviews & Ratings</p>
             <div className="w-20 h-0.5 bg-primary rounded-full mt-2"></div>
           </div>
-
           <div className="grid grid-cols-1 md:grid-cols-2 gap-10">
-            {/* List Reviews */}
+            {}
             <div className="flex flex-col gap-4">
               <h3 className="text-xl font-medium">Customer Reviews</h3>
               {reviews && reviews.length > 0 ? (
@@ -214,8 +197,7 @@ const SingleProduct = () => {
                 <p className="text-gray-500">No reviews yet.</p>
               )}
             </div>
-
-            {/* Write Review */}
+            {}
             <div className="flex flex-col gap-4">
               <h3 className="text-xl font-medium">Write a Review</h3>
               <form onSubmit={submitReview} className="flex flex-col gap-4 border p-6 rounded-md shadow-sm bg-white">
@@ -234,7 +216,6 @@ const SingleProduct = () => {
                     ))}
                   </div>
                 </div>
-
                 <div className="flex flex-col gap-2">
                   <label className="text-sm font-medium">Comment</label>
                   <textarea
@@ -245,7 +226,6 @@ const SingleProduct = () => {
                     required
                   ></textarea>
                 </div>
-
                 <button
                   type="submit"
                   className="bg-indigo-500 text-white py-2 rounded-md hover:bg-indigo-600 transition disabled:opacity-50"

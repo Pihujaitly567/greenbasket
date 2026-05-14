@@ -5,7 +5,6 @@ export const sendSuccess = (res, statusCode, data = {}, message = "Success") => 
     ...data,
   });
 };
-
 export const sendError = (res, statusCode, message = "Something went wrong", errors = null) => {
   const response = {
     success: false,

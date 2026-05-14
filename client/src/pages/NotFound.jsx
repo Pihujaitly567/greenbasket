@@ -1,6 +1,5 @@
 import { Link } from "react-router-dom";
 import { assets } from "../assets/assets";
-
 const NotFound = () => {
   return (
     <div className="min-h-[70vh] flex flex-col items-center justify-center text-center px-4">
@@ -19,5 +18,4 @@ const NotFound = () => {
     </div>
   );
 };
-
 export default NotFound;

@@ -1,5 +1,4 @@
 import { z } from "zod";
-
 export const addAddressSchema = z.object({
   street: z
     .string({ required_error: "Street address is required" })

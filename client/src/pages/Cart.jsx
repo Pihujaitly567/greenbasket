@@ -1,6 +1,5 @@
 import { useEffect, useState } from "react";
 import { useAppContext } from "../context/AppContext";
-
 import toast from "react-hot-toast";
 const Cart = () => {
   const {
@@ -16,23 +15,16 @@ const Cart = () => {
     user,
     backendUrl,
   } = useAppContext();
-
-  // state to store the products available in cart
   const [cartArray, setCartArray] = useState([]);
-  // state to address
   const [address, setAddress] = useState([]);
   const [showAddress, setShowAddress] = useState(false);
-  // state for selected address
   const [selectedAddress, setSelectedAddress] = useState(null);
   const [paymentOption, setPaymentOption] = useState("COD");
   const [loading, setLoading] = useState(true);
-
-  // Coupon states
   const [couponCode, setCouponCode] = useState("");
   const [discountAmount, setDiscountAmount] = useState(0);
   const [couponValid, setCouponValid] = useState(false);
   const [couponMessage, setCouponMessage] = useState("");
-
   const getCart = () => {
     let tempArray = [];
     for (const key in cartItems) {
@@ -42,7 +34,6 @@ const Cart = () => {
     }
     setCartArray(tempArray);
   };
-
   const getAddress = async () => {
     try {
       const { data } = await axios.get("/api/address/get");
@@ -63,66 +54,55 @@ const Cart = () => {
       getAddress();
     }
   }, [user]);
-
   useEffect(() => {
     if (products.length > 0 && cartItems) {
       getCart();
       setLoading(false);
     }
   }, [products, cartItems]);
-
   const loadRazorpay = () => {
     return new Promise((resolve) => {
       const script = document.createElement("script");
       script.src = "https://checkout.razorpay.com/v1/checkout.js";
-      script.async = true; // Make script load asynchronously
+      script.async = true; 
       script.onload = () => resolve(true);
       script.onerror = () => resolve(false);
       document.body.appendChild(script);
     });
   };
-
   const handlePlaceOrder = async () => {
-    // 1. Load Razorpay SDK
     const res = await loadRazorpay();
     if (!res) {
       toast.error("Razorpay SDK failed to load. Are you online?");
       return;
     }
-
-    // 2. Create Order on Backend
     try {
       const { data: orderData } = await axios.post("/api/payment/create-order", {
-        amount: totalCartAmount() + (totalCartAmount() * 2) / 100, // Including tax
+        amount: totalCartAmount() + (totalCartAmount() * 2) / 100, 
       });
-
       if (!orderData.success) {
         toast.error("Error creating order");
         return;
       }
-
-      // 3. Initialize Razorpay Options
       const options = {
-        key: import.meta.env.VITE_RAZORPAY_KEY_ID, // Enter the Key ID generated from the Dashboard
+        key: import.meta.env.VITE_RAZORPAY_KEY_ID, 
         amount: orderData.order.amount,
         currency: orderData.order.currency,
         name: "GreenBasket",
         description: "Grocery Order Payment",
         order_id: orderData.order.id,
         handler: async function (response) {
-          // 4. Verify Payment on Backend
           try {
             const { data: verifyData } = await axios.post("/api/payment/verify-payment", response);
             if (verifyData.success) {
-              // 5. Place Order in DB (existing logic)
-              const { data } = await axios.post("/api/order/cod", { // Renamed endpoint to be generic
+              const { data } = await axios.post("/api/order/cod", { 
                 items: cartArray.map((item) => ({
                   product: item._id,
                   quantity: item.quantity,
                 })),
                 amount: totalCartAmount() + (totalCartAmount() * 2) / 100,
                 address: selectedAddress._id,
-                paymentStatus: "Paid", // Mark as paid for online orders
+                paymentStatus: "Paid", 
                 paymentMethod: "Online",
                 razorpayPaymentId: response.razorpay_payment_id,
                 razorpayOrderId: response.razorpay_order_id,
@@ -145,22 +125,19 @@ const Cart = () => {
         prefill: {
           name: user?.name,
           email: user?.email,
-          contact: user?.phone || "9999999999", // Can be dynamic, use user's phone if available
+          contact: user?.phone || "9999999999", 
         },
         theme: {
           color: "#4f46e5",
         },
       };
-
       const paymentObject = new window.Razorpay(options);
       paymentObject.open();
-
     } catch (error) {
       console.log(error);
       toast.error(error.message);
     }
   };
-
   const applyCoupon = async () => {
     if (!couponCode) {
       toast.error("Please enter a coupon code");
@@ -172,7 +149,6 @@ const Cart = () => {
         orderAmount: totalCartAmount(),
         categories: cartArray.map((item) => item.category),
       });
-
       if (data.success && data.valid) {
         setDiscountAmount(data.discount);
         setCouponValid(true);
@@ -191,22 +167,19 @@ const Cart = () => {
       toast.error(error.response?.data?.message || error.message);
     }
   };
-
   const placeOrder = async () => {
     try {
       if (!selectedAddress) {
         return toast.error("Please select an address");
       }
-
       if (paymentOption === "COD") {
-        // place order with cod
         const { data } = await axios.post("/api/order/cod", {
           items: cartArray.map((item) => ({
             product: item._id,
             quantity: item.quantity,
           })),
           address: selectedAddress._id,
-          paymentStatus: "Pending", // For COD, payment is pending
+          paymentStatus: "Pending", 
           paymentMethod: "COD",
           couponCode: couponValid ? couponCode : undefined,
           discountAmount: couponValid ? discountAmount : undefined,
@@ -225,7 +198,6 @@ const Cart = () => {
       toast.error(error.response?.data?.message || error.message);
     }
   };
-
   if (loading) {
     return (
       <div className="flex flex-col md:flex-row py-16 max-w-6xl w-full px-6 mx-auto gap-8">
@@ -244,7 +216,6 @@ const Cart = () => {
       </div>
     );
   }
-
   if (cartArray.length === 0) {
     return (
       <div className="min-h-[60vh] flex flex-col items-center justify-center text-center px-4">
@@ -259,7 +230,6 @@ const Cart = () => {
       </div>
     );
   }
-
   return (
     <div className="flex flex-col md:flex-row py-16 max-w-6xl w-full px-6 mx-auto gap-8">
       <div className="flex-1 max-w-4xl">
@@ -267,13 +237,11 @@ const Cart = () => {
           Shopping Cart{" "}
           <span className="text-base font-medium text-green-600 bg-green-50 px-2 py-1 rounded-full">{cartCount()} Items</span>
         </h1>
-
         <div className="grid grid-cols-[2fr_1fr_1fr] text-gray-400 text-sm font-semibold uppercase tracking-wider pb-3 border-b border-gray-200">
           <p className="text-left">Product Details</p>
           <p className="text-center">Subtotal</p>
           <p className="text-center">Action</p>
         </div>
-
         {cartArray.map((product, index) => (
           <div
             key={product._id}
@@ -347,7 +315,6 @@ const Cart = () => {
             </button>
           </div>
         ))}
-
         <button
           onClick={() => navigate("/products")}
           className="group cursor-pointer flex items-center mt-8 gap-2 text-green-600 font-semibold hover:text-green-700 transition-colors"
@@ -412,9 +379,7 @@ const Cart = () => {
               </div>
             )}
           </div>
-
           <p className="text-xs font-bold text-gray-400 uppercase tracking-wider mt-6 mb-3">Payment Method</p>
-
           <select
             onChange={(e) => setPaymentOption(e.target.value)}
             className="w-full border border-gray-200 rounded-lg bg-gray-50 focus:bg-white px-4 py-3 outline-none focus:ring-2 focus:ring-green-500 font-medium text-gray-700 transition-all"
@@ -423,9 +388,7 @@ const Cart = () => {
             <option value="Online">Online Payment</option>
           </select>
         </div>
-
         <hr className="border-gray-100" />
-
         <div className="text-gray-500 mt-4 space-y-2">
           <p className="flex justify-between">
             <span>Price</span>
@@ -445,7 +408,6 @@ const Cart = () => {
               <span>-₹{discountAmount}</span>
             </p>
           )}
-          
           <div className="mt-4 pt-4 border-t border-gray-100">
              <p className="text-xs font-bold text-gray-400 uppercase tracking-wider mb-2">Have a coupon?</p>
              <div className="flex gap-2">
@@ -466,13 +428,11 @@ const Cart = () => {
                <p className={`text-xs mt-2 font-medium ${couponValid ? 'text-green-600' : 'text-red-500'}`}>{couponMessage}</p>
              )}
           </div>
-
           <p className="flex justify-between text-xl font-extrabold text-gray-900 mt-4 pt-4 border-t border-gray-100">
             <span>Total Amount:</span>
             <span>₹{Math.max(0, totalCartAmount() + Math.floor((totalCartAmount() * 2) / 100) - discountAmount)}</span>
           </p>
         </div>
-
         <button
           onClick={placeOrder}
           className="w-full py-4 mt-6 rounded-xl cursor-pointer bg-green-600 text-white font-bold text-lg hover:bg-green-700 shadow-lg shadow-green-600/30 active:scale-[0.98] transition-all"

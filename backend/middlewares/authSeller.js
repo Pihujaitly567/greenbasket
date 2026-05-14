@@ -6,7 +6,6 @@ export const authSeller = async (req, res, next) => {
   }
   try {
     const decoded = jwt.verify(sellerToken, process.env.JWT_SECRET);
-    // Allow if decoded has an ID (DB seller) OR if email matches env (Hardcoded admin)
     if (decoded.id || decoded.email === process.env.SELLER_EMAIL) {
       return next();
     } else {

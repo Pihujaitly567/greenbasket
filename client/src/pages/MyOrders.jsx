@@ -1,9 +1,7 @@
 import { useContext, useEffect, useState } from "react";
-
 import { useAppContext } from "../context/AppContext";
 import toast from "react-hot-toast";
 import { assets } from "../assets/assets";
-
 const MyOrders = () => {
   const [myOrders, setMyOrders] = useState([]);
   const { axios, user, backendUrl } = useAppContext();
@@ -19,7 +17,6 @@ const MyOrders = () => {
       toast.error(error.message);
     }
   };
-
   useEffect(() => {
     if (user) {
       fetchOrders();
@@ -30,7 +27,6 @@ const MyOrders = () => {
       <div>
         <p className="text-2xl md:text-3xl font-medium">My Orders</p>
       </div>
-
       {Array.isArray(myOrders) && myOrders.map((order, index) => (
         <div
           key={index}
@@ -55,13 +51,11 @@ const MyOrders = () => {
                     className="w-16 h-16 object-contain"
                   />
                 </div>
-
                 <div className="ml-4">
                   <h2 className="text-xl font-medium">{item.product?.name || "Product Unavailable"}</h2>
                   <p>{item.product?.category || "N/A"}</p>
                 </div>
               </div>
-
               <div className=" text-lg font-medium space-y-2">
                 <p>Quantity: {item.quantity || "1"}</p>
                 <div className="flex items-center gap-2">

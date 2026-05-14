@@ -1,5 +1,4 @@
 import mongoose from "mongoose";
-
 const couponSchema = new mongoose.Schema(
   {
     code: {
@@ -29,11 +28,11 @@ const couponSchema = new mongoose.Schema(
     },
     maxDiscountAmount: {
       type: Number,
-      default: null, // null means no cap (for percentage discounts)
+      default: null, 
     },
     maxUses: {
       type: Number,
-      default: null, // null means unlimited
+      default: null, 
     },
     usedCount: {
       type: Number,
@@ -50,7 +49,7 @@ const couponSchema = new mongoose.Schema(
       },
     ],
     applicableCategories: {
-      type: [String], // empty array means applies to all categories
+      type: [String], 
       default: [],
     },
     startsAt: {
@@ -68,9 +67,6 @@ const couponSchema = new mongoose.Schema(
   },
   { timestamps: true }
 );
-
-// Index for fast lookup by code
 couponSchema.index({ code: 1 });
-
 const Coupon = mongoose.model("Coupon", couponSchema);
 export default Coupon;

@@ -22,11 +22,9 @@ import AOS from "aos";
 import "aos/dist/aos.css";
 import { useEffect } from "react";
 import NotFound from "./pages/NotFound";
-
 const App = () => {
   const isSellerPath = useLocation().pathname.includes("seller");
   const { showUserLogin, isSeller } = useAppContext();
-
   useEffect(() => {
     AOS.init({
       duration: 600,
@@ -35,7 +33,6 @@ const App = () => {
       mirror: false,
     });
   }, []);
-
   return (
     <div className="overflow-x-hidden text-default min-h-screen">
       {isSellerPath ? null : <Navbar />}

@@ -3,17 +3,14 @@ import { categories } from "../assets/assets";
 import ProductCard from "../components/ProductCard";
 import { useAppContext } from "../context/AppContext";
 import { useParams } from "react-router-dom";
-
 const ProductCategory = () => {
   const { axios } = useAppContext();
   const { category } = useParams();
   const [products, setProducts] = useState([]);
   const [loading, setLoading] = useState(false);
-
   const searchCategory = categories.find(
     (item) => item.path.toLowerCase() === category
   );
-
   useEffect(() => {
     const fetchCategoryProducts = async () => {
       try {
@@ -30,7 +27,6 @@ const ProductCategory = () => {
     };
     fetchCategoryProducts();
   }, [category, axios]);
-
   return (
     <div className="mt-16">
       {searchCategory && (
@@ -40,7 +36,6 @@ const ProductCategory = () => {
           </h1>
         </div>
       )}
-
       {loading ? (
         <div className="flex justify-center items-center h-64">
           <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-indigo-600"></div>
@@ -64,4 +59,3 @@ const ProductCategory = () => {
   );
 };
 export default ProductCategory;
-

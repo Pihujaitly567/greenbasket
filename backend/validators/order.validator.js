@@ -1,5 +1,4 @@
 import { z } from "zod";
-
 export const placeOrderSchema = z.object({
   items: z
     .array(
@@ -16,7 +15,6 @@ export const placeOrderSchema = z.object({
   couponCode: z.string().optional(),
   discountAmount: z.number().optional(),
 });
-
 export const updateStatusSchema = z.object({
   orderId: z.string({ required_error: "Order ID is required" }),
   status: z.enum(

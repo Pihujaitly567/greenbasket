@@ -1,5 +1,4 @@
 import { z } from "zod";
-
 export const addProductSchema = z.object({
   name: z
     .string({ required_error: "Product name is required" })
@@ -21,7 +20,6 @@ export const addProductSchema = z.object({
     .trim()
     .min(1, "Category is required"),
 });
-
 export const updateProductSchema = z.object({
   id: z.string({ required_error: "Product ID is required" }),
   name: z.string().trim().min(2).max(100).optional(),
@@ -30,11 +28,9 @@ export const updateProductSchema = z.object({
   offerPrice: z.number({ coerce: true }).positive().optional(),
   category: z.string().trim().optional(),
 });
-
 export const productIdSchema = z.object({
   id: z.string({ required_error: "Product ID is required" }),
 });
-
 export const reviewSchema = z.object({
   productId: z.string({ required_error: "Product ID is required" }),
   rating: z
@@ -48,7 +44,6 @@ export const reviewSchema = z.object({
     .min(3, "Comment must be at least 3 characters")
     .max(500, "Comment cannot exceed 500 characters"),
 });
-
 export const stockSchema = z.object({
   id: z.string({ required_error: "Product ID is required" }),
   inStock: z.boolean({ required_error: "Stock status is required" }),

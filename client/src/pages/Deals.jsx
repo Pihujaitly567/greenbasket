@@ -1,11 +1,9 @@
 import { useState, useEffect } from "react";
 import ProductCard from "../components/ProductCard";
 import { useAppContext } from "../context/AppContext";
-
 const Deals = () => {
     const { products } = useAppContext();
     const [discountedProducts, setDiscountedProducts] = useState([]);
-
     useEffect(() => {
         if (products.length > 0) {
             const deals = products.filter(
@@ -14,7 +12,6 @@ const Deals = () => {
             setDiscountedProducts(deals);
         }
     }, [products]);
-
     return (
         <div className="mt-16">
             <h1 className="text-3xl lg:text-4xl font-medium">Exclusive Deals</h1>

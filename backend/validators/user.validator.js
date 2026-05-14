@@ -1,5 +1,4 @@
 import { z } from "zod";
-
 export const registerSchema = z.object({
   name: z
     .string({ required_error: "Name is required" })
@@ -15,7 +14,6 @@ export const registerSchema = z.object({
     .min(6, "Password must be at least 6 characters")
     .max(100, "Password cannot exceed 100 characters"),
 });
-
 export const loginSchema = z.object({
   email: z
     .string({ required_error: "Email is required" })

@@ -1,5 +1,4 @@
 import mongoose from "mongoose";
-
 const sellerSchema = new mongoose.Schema(
     {
         name: { type: String, required: true },
@@ -8,7 +7,5 @@ const sellerSchema = new mongoose.Schema(
     },
     { minimize: false }
 );
-
 const Seller = mongoose.model("Seller", sellerSchema);
-
 export default Seller;

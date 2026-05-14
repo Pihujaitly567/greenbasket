@@ -2,11 +2,9 @@ import toast from "react-hot-toast";
 import { useAppContext } from "../../context/AppContext";
 import { useNavigate } from "react-router-dom";
 import { assets } from "../../assets/assets";
-
 const ProductList = () => {
   const { products, fetchProducts, axios, backendUrl } = useAppContext();
   const navigate = useNavigate();
-
   const toggleStock = async (id, inStock) => {
     try {
       const { data } = await axios.post("/api/product/stock", { id, inStock });
@@ -20,7 +18,6 @@ const ProductList = () => {
       toast.error(error.message);
     }
   };
-
   const deleteProduct = async (id) => {
     if (!window.confirm("Are you sure you want to delete this product?")) return;
     try {
@@ -35,7 +32,6 @@ const ProductList = () => {
       toast.error(error.message);
     }
   };
-
   return (
     <div className="flex-1 py-10 flex flex-col justify-between">
       <div className="w-full md:p-10 p-4">
